@@ -17,6 +17,7 @@ import 'providers/settings_provider.dart';
 import 'screens/add_project_screen.dart';
 import 'screens/charts_screen.dart';
 import 'screens/projects_screen.dart';
+import 'widgets/line.dart';
 import 'widgets/navigation_bar.dart';
 import 'generated/locale_keys.g.dart';
 
@@ -100,7 +101,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _scrollController = ScrollController();
+  final _scrollThreshold = 200.0;
   int _selectedIndex = 0;
+
+  void _onScroll() {
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    if (maxScroll - currentScroll <= _scrollThreshold) {
+      //_postBloc.dispatch(Fetch());
+    }
+  }
+
+  @override
+  void initState() {
+    //_scrollController.addListener(_onScroll);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +135,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: <Widget>[
         Consumer<DaysProvider>(builder: (_, daysProvider, __) {
+          print(daysProvider.days.length);
+          if (daysProvider.days.length == 0) return ShowImage();
           return ScrollablePositionedList.builder(
             itemBuilder: (_, index) => daysProvider.days[index],
             itemCount: daysProvider.days.length,

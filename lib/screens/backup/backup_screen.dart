@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:upTimer/generated/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:upTimer/providers/auth_provider.dart';
 
 import 'google_drive_screen.dart';
@@ -13,7 +16,7 @@ class BackupScreen extends StatelessWidget {
         iconTheme: IconThemeData(
             color: Theme.of(context).appBarTheme.actionsIconTheme.color),
         backgroundColor: Theme.of(context).backgroundColor,
-        title: Text('Backup / Restore'),
+        title: Text(LocaleKeys.Backup.tr(), style: TextStyle(fontSize: 16)),
       ),
       body: StreamBuilder<User>(
         stream: FirebaseAuth.instance.idTokenChanges(),
@@ -30,7 +33,7 @@ class BackupScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Login',
+                      LocaleKeys.Login.tr(),
                       style:
                           TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                     ),
@@ -44,7 +47,16 @@ class BackupScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              onTap: () => context.read<AuthProvider>().silentLogin(),
+              onTap: () async {
+                try {
+                  await context.read<AuthProvider>().silentLogin();
+                } catch (e) {
+                  FlushbarHelper.createError(
+                          message: LocaleKeys.ErrorLogin.tr(),
+                          duration: Duration(seconds: 2))
+                      .show(context);
+                }
+              },
             );
           } else {
             return Center(

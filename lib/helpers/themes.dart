@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-final ThemeData lightTheme = ThemeData.light().copyWith(
+final ThemeData lightTheme = ThemeData(
+  brightness: Brightness.light,
+  fontFamily: 'Mulish',
   bottomNavigationBarTheme:
       BottomNavigationBarThemeData(selectedItemColor: Colors.indigo),
   backgroundColor: Colors.white,
@@ -16,7 +18,9 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
       ))),
 );
 
-final ThemeData darkTheme = ThemeData.dark().copyWith(
+final ThemeData darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  fontFamily: 'Mulish',
   bottomNavigationBarTheme:
       BottomNavigationBarThemeData(selectedItemColor: Colors.white),
   dividerColor: Colors.transparent,

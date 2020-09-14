@@ -58,6 +58,7 @@ class _ChartsScreenState extends State<ChartsScreen> {
             duration: duration));
     });
     projectDuration = projectDuration.reversed.toList();
+    if (projectDuration.length == 0) return ShowImage();
 
     return MediaQuery.of(context).orientation == Orientation.portrait
         ? buildColumn(projectDuration, totalHours)

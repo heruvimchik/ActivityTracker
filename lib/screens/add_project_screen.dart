@@ -79,6 +79,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 20),
               child: RaisedButton(
+                shape: StadiumBorder(),
                 onPressed: _textController.text.trim().isEmpty
                     ? null
                     : () {

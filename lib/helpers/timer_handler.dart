@@ -17,3 +17,9 @@ bool isRunning(Project projRun) {
       .firstWhere((timer) => timer.endTime == null, orElse: () => null);
   return running != null;
 }
+
+bool isNow(DateTime now, DateTime date) {
+  if (now.day == date.day && now.month == date.month && now.year == date.year)
+    return true;
+  return false;
+}

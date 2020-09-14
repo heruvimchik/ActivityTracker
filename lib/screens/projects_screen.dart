@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:upTimer/generated/locale_keys.g.dart';
 import 'package:upTimer/providers/projects_provider.dart';
+import 'package:upTimer/widgets/line.dart';
 import 'package:upTimer/widgets/project_item.dart';
 
 class ProjectsScreen extends StatelessWidget {
@@ -11,6 +12,7 @@ class ProjectsScreen extends StatelessWidget {
     return Consumer<ProjectsProvider>(
       builder: (context, projProvider, __) {
         final projects = projProvider.projects.reversed.toList();
+        if (projects.length == 0) return ShowImage();
         return ListView.builder(
           itemBuilder: (context, index) => Dismissible(
             key: Key('__item_${projects[index].projectID}'),

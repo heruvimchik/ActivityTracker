@@ -93,7 +93,7 @@ class AppDrawer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Backup / Restore',
+                    LocaleKeys.Backup.tr(),
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                   ),
                   Container(

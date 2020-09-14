@@ -4,12 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:upTimer/generated/locale_keys.g.dart';
-import 'package:upTimer/helpers/const.dart';
 import 'package:upTimer/providers/auth_provider.dart';
 import 'package:upTimer/providers/projects_provider.dart';
 import 'package:upTimer/providers/settings_provider.dart';
 
 class RestoreScreen extends StatelessWidget {
+  final date24h = DateFormat('MMM dd yyyy HH:mm:ss', LocaleKeys.locale.tr());
+  final date12h = DateFormat('MMM dd yyyy hh:mm:ss a', LocaleKeys.locale.tr());
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context, listen: false);
@@ -23,7 +24,7 @@ class RestoreScreen extends StatelessWidget {
         iconTheme: IconThemeData(
             color: Theme.of(context).appBarTheme.actionsIconTheme.color),
         backgroundColor: Theme.of(context).backgroundColor,
-        title: Text('Restore'),
+        title: Text(LocaleKeys.Restore.tr(), style: TextStyle(fontSize: 16)),
       ),
       body: FutureBuilder<ga.FileList>(
         future: filesLoaded,
@@ -42,13 +43,12 @@ class RestoreScreen extends StatelessWidget {
                 color: Theme.of(context).errorColor,
                 child: Icon(Icons.delete, color: Colors.white, size: 40),
                 alignment: Alignment.centerRight,
-                //padding: EdgeInsets.only(right: 20),
                 margin: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
               ),
               confirmDismiss: (direction) => showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: Text('Delete'),
+                  title: Text(LocaleKeys.DeleteBackup.tr()),
                   actions: <Widget>[
                     FlatButton(
                         onPressed: () async {
@@ -57,13 +57,13 @@ class RestoreScreen extends StatelessWidget {
                                 gdID: snapshot.data.files[index].id);
                             Navigator.of(ctx).pop(true);
                             FlushbarHelper.createSuccess(
-                                    message: 'Successfully deleted',
+                                    message: LocaleKeys.SuccessDelete.tr(),
                                     duration: Duration(seconds: 2))
                                 .show(context);
                           } catch (e) {
                             Navigator.of(ctx).pop(false);
                             FlushbarHelper.createError(
-                                    message: 'Error: Unable to delete!',
+                                    message: LocaleKeys.ErrorDelete.tr(),
                                     duration: Duration(seconds: 2))
                                 .show(context);
                           }
@@ -85,7 +85,7 @@ class RestoreScreen extends StatelessWidget {
                   onTap: () => showDialog(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: Text('Restore?'),
+                      title: Text(LocaleKeys.RestoreBackup.tr()),
                       actions: <Widget>[
                         FlatButton(
                             onPressed: () async {
@@ -95,12 +95,13 @@ class RestoreScreen extends StatelessWidget {
                                     gdID: snapshot.data.files[index].id,
                                     projects: proj);
                                 FlushbarHelper.createSuccess(
-                                        message: 'Successfully downloaded',
+                                        message:
+                                            LocaleKeys.SuccessDownload.tr(),
                                         duration: Duration(seconds: 2))
                                     .show(context);
                               } catch (e) {
                                 FlushbarHelper.createError(
-                                        message: 'Error: Unable to download!',
+                                        message: LocaleKeys.ErrorDownload.tr(),
                                         duration: Duration(seconds: 2))
                                     .show(context);
                               }

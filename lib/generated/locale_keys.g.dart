@@ -43,5 +43,20 @@ abstract class  LocaleKeys {
   static const Monday = 'Monday';
   static const locale = 'locale';
   static const locValue = 'locValue';
+  static const BackupButton = 'BackupButton';
+  static const Restore = 'Restore';
+  static const LastBackup = 'LastBackup';
+  static const Account = 'Account';
+  static const Logout = 'Logout';
+  static const SuccessBackup = 'SuccessBackup';
+  static const Login = 'Login';
+  static const ErrorBackup = 'ErrorBackup';
+  static const SuccessDelete = 'SuccessDelete';
+  static const SuccessDownload = 'SuccessDownload';
+  static const ErrorDownload = 'ErrorDownload';
+  static const ErrorDelete = 'ErrorDelete';
+  static const DeleteBackup = 'DeleteBackup';
+  static const RestoreBackup = 'RestoreBackup';
+  static const ErrorLogin = 'ErrorLogin';
 
 }

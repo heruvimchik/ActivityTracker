@@ -56,7 +56,22 @@ class CodegenLoader extends AssetLoader{
   "Sunday": "Sunday",
   "Monday": "Monday",
   "locale": "en",
-  "locValue": "0"
+  "locValue": "0",
+  "BackupButton": "Backup to Google Drive",
+  "Restore": "Restore",
+  "LastBackup": "Last backup",
+  "Account": "Account",
+  "Logout": "Log out",
+  "SuccessBackup": "Successfully uploaded backup",
+  "Login": "Login",
+  "ErrorBackup": "Error: unable to backup",
+  "SuccessDelete": "Successfully deleted",
+  "SuccessDownload": "Successfully restored",
+  "ErrorDownload": "Error: unable to restore",
+  "ErrorDelete": "Error: unable to delete data",
+  "DeleteBackup": "Do you want to delete this backup?",
+  "RestoreBackup": "Do you want to restore this backup?",
+  "ErrorLogin": "Error: unable to login"
 };
 static const Map<String,dynamic> ru = {
   "Timeline": "Хронология",
@@ -100,7 +115,22 @@ static const Map<String,dynamic> ru = {
   "Sunday": "Воскресенье",
   "Monday": "Понедельник",
   "locale": "ru",
-  "locValue": "4"
+  "locValue": "4",
+  "BackupButton": "Копирование на Google Диск",
+  "Restore": "Восстановление",
+  "LastBackup": "Последняя копия",
+  "Account": "Учётная запись",
+  "Logout": "Выйти",
+  "SuccessBackup": "Резервная копия успешно загружена",
+  "Login": "Вход",
+  "ErrorBackup": "Ошибка: не удалось сделать резервную копию",
+  "SuccessDelete": "Успешное удаление",
+  "SuccessDownload": "Успешное восстановление",
+  "ErrorDownload": "Ошибка: не удалось сделать восстановление",
+  "ErrorDelete": "Ошибка: не удалось удалить данные",
+  "DeleteBackup": "Вы хотите удалить эту резервную копию?",
+  "RestoreBackup": "Вы хотите восстановить эту резервную копию?",
+  "ErrorLogin": "Ошибка: не удалось выполнить вход"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": en, "ru": ru};
 }
