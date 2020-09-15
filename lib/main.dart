@@ -55,12 +55,13 @@ class MyApp extends StatelessWidget {
           create: (_) => SettingsProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => ProjectsProvider(),
-        ),
-        ChangeNotifierProxyProvider<ProjectsProvider, DaysProvider>(
           create: (_) => DaysProvider(),
-          update: (context, projects, days) =>
-              days..daysProjects = projects.projects,
+        ),
+        ChangeNotifierProvider(
+          create: (context) {
+            final daysProv = Provider.of<DaysProvider>(context, listen: false);
+            return ProjectsProvider(daysProv);
+          },
         ),
         ChangeNotifierProvider(
           create: (_) => AuthProvider(),
@@ -101,23 +102,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _scrollController = ScrollController();
-  final _scrollThreshold = 200.0;
   int _selectedIndex = 0;
-
-  void _onScroll() {
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.position.pixels;
-    if (maxScroll - currentScroll <= _scrollThreshold) {
-      //_postBloc.dispatch(Fetch());
-    }
-  }
-
-  @override
-  void initState() {
-    //_scrollController.addListener(_onScroll);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,10 +120,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: <Widget>[
         Consumer<DaysProvider>(builder: (_, daysProvider, __) {
-          print(daysProvider.days.length);
-          if (daysProvider.days.length == 0) return ShowImage();
+          if (daysProvider.days == null || daysProvider.days.length == 0)
+            return ShowImage();
           return ScrollablePositionedList.builder(
-            itemBuilder: (_, index) => daysProvider.days[index],
+            itemBuilder: (ctx, index) => daysProvider.days[index].build(ctx),
             itemCount: daysProvider.days.length,
             itemScrollController:
                 context.read<ScrollProvider>().itemScrollController,

@@ -11,8 +11,9 @@ class ProjectsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ProjectsProvider>(
       builder: (context, projProvider, __) {
+        if (projProvider.projects == null || projProvider.projects.length == 0)
+          return ShowImage();
         final projects = projProvider.projects.reversed.toList();
-        if (projects.length == 0) return ShowImage();
         return ListView.builder(
           itemBuilder: (context, index) => Dismissible(
             key: Key('__item_${projects[index].projectID}'),

@@ -2,17 +2,36 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:upTimer/helpers/timer_handler.dart';
+import 'package:upTimer/providers/days_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:upTimer/helpers/db_helpers.dart';
 import 'package:upTimer/models/project.dart';
 
 class ProjectsProvider with ChangeNotifier {
+  final DaysProvider _daysProvider;
   Future<void> loadDb;
   List<Project> _projects;
   List<Project> get projects => [..._projects];
 
-  ProjectsProvider() {
+  ProjectsProvider(this._daysProvider) {
     loadDb = fetchProjects();
+  }
+
+  Future<void> fetchProjects({bool initNotification = true}) async {
+    final dataList = await DBHelper.db.getData();
+    _projects = dataList
+        .map(
+          (item) => Project.fromDB(item),
+        )
+        .toList();
+    notifyListeners();
+    _daysProvider.setProjectsDays(_projects);
+
+    if (initNotification)
+      _initLocalNotification();
+    else
+      flutterLocalNotificationsPlugin.cancelAll();
+    return;
   }
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -121,31 +140,17 @@ class ProjectsProvider with ChangeNotifier {
       startTime: DateTime.now(),
       endTime: null,
     );
-    final newPlace = Project(
+    final newProject = Project(
       projectID: Uuid().v4(),
       color: color,
       records: <Record>[record],
       description: description,
     );
-    _projects.add(newPlace);
+    _projects.add(newProject);
     notifyListeners();
-    await DBHelper.db.insert(newPlace.toMap());
+    _daysProvider.addProjectDays(newProject);
+    await DBHelper.db.insert(newProject.toMap());
     _showNotification(project: _projects.last, start: true);
-  }
-
-  Future<void> fetchProjects({bool initNotification = true}) async {
-    final dataList = await DBHelper.db.getData();
-    _projects = dataList
-        .map(
-          (item) => Project.fromDB(item),
-        )
-        .toList();
-    notifyListeners();
-    if (initNotification)
-      _initLocalNotification();
-    else
-      flutterLocalNotificationsPlugin.cancelAll();
-    return;
   }
 
   Future<void> updateProject(
@@ -157,6 +162,8 @@ class ProjectsProvider with ChangeNotifier {
       updColor: color,
     );
     notifyListeners();
+    _daysProvider.updateProjectDays(_projects[index]);
+
     await DBHelper.db.update(_projects[index]);
     final running =
         _projects[index].records.indexWhere((timer) => timer.endTime == null);
@@ -168,6 +175,7 @@ class ProjectsProvider with ChangeNotifier {
   Future<void> updateRecord(
       {@required String projectID, Record updRecord}) async {
     final index = _projects.indexWhere((prj) => prj.projectID == projectID);
+    if (index < 0) return;
     final indRec = _projects[index]
         .records
         .indexWhere((timer) => timer.recordID == updRecord.recordID);
@@ -178,6 +186,8 @@ class ProjectsProvider with ChangeNotifier {
                 endTime: updRecord.endTime,
                 startTime: updRecord.startTime,
               );
+      _daysProvider.updateRecordDays(
+          projectID, _projects[index].records[indRec]);
     } else {
       final record = Record(
         recordID: Uuid().v4(),
@@ -185,6 +195,7 @@ class ProjectsProvider with ChangeNotifier {
         endTime: updRecord.endTime,
       );
       _projects[index].records.add(record);
+      _daysProvider.addNewRecord(_projects[index], record);
     }
     notifyListeners();
     await DBHelper.db.update(_projects[index]);
@@ -209,7 +220,6 @@ class ProjectsProvider with ChangeNotifier {
         .records
         .firstWhere((timer) => timer.endTime == null, orElse: () => null);
     if (running != null) return;
-
     final record = Record(
       recordID: Uuid().v4(),
       startTime: DateTime.now(),
@@ -218,6 +228,7 @@ class ProjectsProvider with ChangeNotifier {
 
     _projects[index].records.add(record);
     notifyListeners();
+    _daysProvider.addNewRecord(_projects[index], record);
     await DBHelper.db.update(_projects[index]);
     _showNotification(project: _projects[index], start: true);
   }
@@ -246,19 +257,26 @@ class ProjectsProvider with ChangeNotifier {
         _projects[index].records[indexStop].endTime =
             DateTime(start.year, start.month, start.day, 23, 59, 59, 999, 0);
       }
+      _daysProvider.updateRecordDays(
+          projectID, _projects[index].records[indexStop]);
       for (int day = 1; day <= days; day++) {
-        _projects[index].records.add(Record(
-              recordID: Uuid().v4(),
-              startTime:
-                  DateTime(start.year, start.month, start.day + day, 0, 0, 0),
-              endTime: (day == days)
-                  ? now
-                  : DateTime(start.year, start.month, start.day + day, 23, 59,
-                      59, 999, 0),
-            ));
+        final record = Record(
+          recordID: Uuid().v4(),
+          startTime:
+              DateTime(start.year, start.month, start.day + day, 0, 0, 0),
+          endTime: (day == days)
+              ? now
+              : DateTime(
+                  start.year, start.month, start.day + day, 23, 59, 59, 999, 0),
+        );
+        _projects[index].records.add(record);
+        _daysProvider.addNewDay(_projects[index], record);
       }
+      _daysProvider.update();
     } else {
       _projects[index].records[indexStop].endTime = now;
+      _daysProvider.updateRecordDays(
+          projectID, _projects[index].records[indexStop]);
     }
     notifyListeners();
     await DBHelper.db.update(_projects[index]);
@@ -268,6 +286,7 @@ class ProjectsProvider with ChangeNotifier {
   Future<void> deleteProject(Project project) async {
     _projects.removeWhere((prj) => prj.projectID == project.projectID);
     notifyListeners();
+    _daysProvider.deleteProjectDays(project.projectID);
     await DBHelper.db.delete(project);
     final id = project.projectID.replaceAll('-', '');
     final number = int.parse(id.substring(0, 8), radix: 16) & 0x7fffffff;
@@ -285,6 +304,8 @@ class ProjectsProvider with ChangeNotifier {
         .records
         .removeWhere((element) => element.recordID == recordID);
     notifyListeners();
+    _daysProvider.deleteRecordDays(projectID, recordID);
+
     await DBHelper.db.update(_projects[index]);
     final running =
         _projects[index].records.indexWhere((timer) => timer.endTime == null);
