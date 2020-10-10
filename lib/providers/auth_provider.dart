@@ -8,7 +8,7 @@ import 'package:http/io_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:upTimer/providers/projects_provider.dart';
+import 'package:activityTracker/providers/projects_provider.dart';
 
 class AuthProvider with ChangeNotifier {
   GoogleSignInAccount googleSignInAccount;
@@ -78,16 +78,15 @@ class AuthProvider with ChangeNotifier {
     if (googleSignInAccount == null) {
       googleSignInAccount = await googleSignIn.signIn();
       if (googleSignInAccount == null) return;
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleSignInAccount.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      await auth.signInWithCredential(credential);
     }
+    final GoogleSignInAuthentication googleAuth =
+        await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    await auth.signInWithCredential(credential);
   }
 
   Future<void> downloadGoogleDriveFile(

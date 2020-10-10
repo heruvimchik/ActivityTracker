@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
-import 'package:upTimer/models/project.dart';
-import 'package:upTimer/providers/projects_provider.dart';
+import 'package:activityTracker/models/project.dart';
+import 'package:activityTracker/providers/projects_provider.dart';
 
 class AddProjectScreen extends StatefulWidget {
   final Project project;
@@ -48,9 +48,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                   decoration: InputDecoration.collapsed(
                     hintText: LocaleKeys.ActivityHint.tr(),
                   ),
-                  onChanged: (value) {
-                    setState(() {});
-                  },
+                  onChanged: (value) => setState(() {}),
                   autofocus: true,
                   controller: _textController,
                   autovalidate: true,

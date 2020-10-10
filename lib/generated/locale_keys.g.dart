@@ -58,5 +58,19 @@ abstract class  LocaleKeys {
   static const DeleteBackup = 'DeleteBackup';
   static const RestoreBackup = 'RestoreBackup';
   static const ErrorLogin = 'ErrorLogin';
+  static const Mon = 'Mon';
+  static const Tue = 'Tue';
+  static const Wed = 'Wed';
+  static const Thu = 'Thu';
+  static const Fri = 'Fri';
+  static const Sat = 'Sat';
+  static const Sun = 'Sun';
+  static const Calendar = 'Calendar';
+  static const Records = 'Records';
+  static const DailyActivity = 'DailyActivity';
+  static const Statistic = 'Statistic';
+  static const D = 'D';
+  static const Y = 'Y';
+  static const All = 'All';
 
 }

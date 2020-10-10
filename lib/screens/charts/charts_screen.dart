@@ -1,25 +1,22 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:upTimer/helpers/timer_handler.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
-import 'package:upTimer/models/project.dart';
-import 'package:upTimer/providers/days_provider.dart';
-import 'package:upTimer/providers/projects_provider.dart';
-import 'package:upTimer/widgets/line.dart';
+import 'package:activityTracker/helpers/timer_handler.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
+import 'package:activityTracker/models/project.dart';
+import 'package:activityTracker/providers/days_provider.dart';
+import 'package:activityTracker/providers/projects_provider.dart';
+import 'package:activityTracker/widgets/line.dart';
 
 class ChartsScreen extends StatefulWidget {
-  const ChartsScreen({Key key}) : super(key: key);
-
+  const ChartsScreen();
   @override
   _ChartsScreenState createState() => _ChartsScreenState();
 }
 
 class _ChartsScreenState extends State<ChartsScreen> {
-  final hourFormat = DateFormat('HH:mm:ss');
   ItemScrollController scrollController = ItemScrollController();
   int _touchedIndex = -1;
 
@@ -29,7 +26,7 @@ class _ChartsScreenState extends State<ChartsScreen> {
         (daysProvider) => daysProvider.dateRange);
 
     List<ProjectDuration> projectDuration = <ProjectDuration>[];
-    List<Project> proj = Provider.of<ProjectsProvider>(context).projects;
+    final proj = Provider.of<ProjectsProvider>(context).projects;
 
     double totalHours = 0;
     proj.forEach((pro) {
@@ -65,7 +62,7 @@ class _ChartsScreenState extends State<ChartsScreen> {
         : buildRow(projectDuration, totalHours);
   }
 
-  Row buildRow(List<ProjectDuration> projectDuration, double totalHours) {
+  Widget buildRow(List<ProjectDuration> projectDuration, double totalHours) {
     return Row(
       children: [
         buildStack(projectDuration, totalHours,
@@ -127,7 +124,9 @@ class _ChartsScreenState extends State<ChartsScreen> {
                     title: title,
                     titleStyle: TextStyle(
                         fontSize: _touchedIndex == index ? 20 : 13,
-                        color: const Color(0xffffffff)),
+                        color: projectDur.project.color.computeLuminance() > 0.5
+                            ? Colors.black
+                            : Colors.white),
                     radius: _touchedIndex == index ? 70 : 50,
                   );
                 })),
@@ -144,49 +143,48 @@ class _ChartsScreenState extends State<ChartsScreen> {
     );
   }
 
-  Expanded buildListProject(List<ProjectDuration> projectDuration) {
+  Widget buildListProject(List<ProjectDuration> projectDuration) {
     return Expanded(
       child: ScrollablePositionedList.builder(
           itemScrollController: scrollController,
           itemBuilder: (context, index) {
-            return Column(
-              children: [
-                Line(),
-                ListTile(
-                  onTap: () {
-                    setState(() {
-                      if (_touchedIndex == index) {
-                        _touchedIndex = -1;
-                      } else
-                        _touchedIndex = index;
-                    });
-                  },
-                  leading: CircleAvatar(
-                    child: Text(
-                      '${projectDuration[index].project.description.trim().substring(0, 1)}',
-                      style: TextStyle(color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                    backgroundColor:
-                        Color(projectDuration[index].project.color.value),
-                    radius: 15.0,
-                  ),
-                  title: Text(
-                    (Duration(
-                                seconds:
-                                    ((projectDuration[index].duration * 60) *
-                                            60)
-                                        .toInt()))
-                            .formatDuration() +
-                        '  ' +
-                        projectDuration[index].project.description,
-                    style: TextStyle(
-                        fontWeight: _touchedIndex == index
-                            ? FontWeight.bold
-                            : FontWeight.normal),
-                  ),
+            return ListTile(
+              onTap: () => setState(() {
+                if (_touchedIndex == index) {
+                  _touchedIndex = -1;
+                } else
+                  _touchedIndex = index;
+              }),
+              leading: CircleAvatar(
+                child: Text(
+                  '${projectDuration[index].project.description.trim().substring(0, 1)}',
+                  style: TextStyle(
+                      color: projectDuration[index]
+                                  .project
+                                  .color
+                                  .computeLuminance() >
+                              0.5
+                          ? Colors.black
+                          : Colors.white),
+                  textAlign: TextAlign.center,
                 ),
-              ],
+                backgroundColor:
+                    Color(projectDuration[index].project.color.value),
+                radius: 15.0,
+              ),
+              title: Text(
+                (Duration(
+                            seconds:
+                                ((projectDuration[index].duration * 60) * 60)
+                                    .toInt()))
+                        .formatDuration() +
+                    '  ' +
+                    projectDuration[index].project.description,
+                style: TextStyle(
+                    fontWeight: _touchedIndex == index
+                        ? FontWeight.bold
+                        : FontWeight.normal),
+              ),
             );
           },
           itemCount: projectDuration.length),

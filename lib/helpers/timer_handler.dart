@@ -1,4 +1,4 @@
-import 'package:upTimer/models/project.dart';
+import 'package:activityTracker/models/project.dart';
 
 extension Format on Duration {
   String formatDuration() {

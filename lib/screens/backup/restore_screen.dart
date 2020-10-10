@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:easy_localization/easy_localization.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
-import 'package:upTimer/providers/auth_provider.dart';
-import 'package:upTimer/providers/projects_provider.dart';
-import 'package:upTimer/providers/settings_provider.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
+import 'package:activityTracker/providers/auth_provider.dart';
+import 'package:activityTracker/providers/projects_provider.dart';
+import 'package:activityTracker/providers/settings_provider.dart';
 
 class RestoreScreen extends StatelessWidget {
   final date24h = DateFormat('MMM dd yyyy HH:mm:ss', LocaleKeys.locale.tr());

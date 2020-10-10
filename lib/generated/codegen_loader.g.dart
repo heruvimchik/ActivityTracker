@@ -71,7 +71,21 @@ class CodegenLoader extends AssetLoader{
   "ErrorDelete": "Error: unable to delete data",
   "DeleteBackup": "Do you want to delete this backup?",
   "RestoreBackup": "Do you want to restore this backup?",
-  "ErrorLogin": "Error: unable to login"
+  "ErrorLogin": "Error: unable to login",
+  "Mon": "Mon",
+  "Tue": "Tue",
+  "Wed": "Wed",
+  "Thu": "Thu",
+  "Fri": "Fri",
+  "Sat": "Sat",
+  "Sun": "Sun",
+  "Calendar": "Calendar",
+  "Records": "Records",
+  "DailyActivity": "Daily activity",
+  "Statistic": "Statistic",
+  "D": "D",
+  "Y": "Y",
+  "All": "All"
 };
 static const Map<String,dynamic> ru = {
   "Timeline": "Хронология",
@@ -130,7 +144,21 @@ static const Map<String,dynamic> ru = {
   "ErrorDelete": "Ошибка: не удалось удалить данные",
   "DeleteBackup": "Вы хотите удалить эту резервную копию?",
   "RestoreBackup": "Вы хотите восстановить эту резервную копию?",
-  "ErrorLogin": "Ошибка: не удалось выполнить вход"
+  "ErrorLogin": "Ошибка: не удалось выполнить вход",
+  "Mon": "Пн",
+  "Tue": "Вт",
+  "Wed": "Ср",
+  "Thu": "Чт",
+  "Fri": "Пт",
+  "Sat": "Сб",
+  "Sun": "Вс",
+  "Calendar": "Календарь",
+  "Records": "Записи",
+  "DailyActivity": "Дни недели",
+  "Statistic": "Статистика",
+  "D": "Д",
+  "Y": "Г",
+  "All": "Все"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": en, "ru": ru};
 }

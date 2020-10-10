@@ -1,118 +1,159 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
-import 'package:upTimer/providers/settings_provider.dart';
-import 'package:upTimer/screens/backup/backup_screen.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
+import 'package:activityTracker/providers/settings_provider.dart';
+import 'package:activityTracker/screens/backup/backup_screen.dart';
+import 'package:activityTracker/screens/calendar_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<SettingsProvider>(context, listen: false);
     return Drawer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 47, bottom: 10, left: 10),
-            child: Text(
-              LocaleKeys.Settings.tr(),
-              textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-          ),
-          const Divider(
-            color: Colors.grey,
-            height: 1,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Selector<SettingsProvider, bool>(
-            selector: (_, sett) => sett.hour24,
-            builder: (context, value, _) => SwitchListTile(
-              dense: true,
-              title: Text(
-                LocaleKeys.HourFMT.tr(),
-                style: TextStyle(fontSize: 13),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 47, bottom: 10, left: 10),
+              child: Text(
+                LocaleKeys.Settings.tr(),
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              value: value,
-              onChanged: (newValue) => settings.setHour24(newValue),
-              activeColor: Colors.indigo,
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Selector<SettingsProvider, bool>(
-            selector: (_, sett) => sett.darkTheme,
-            builder: (context, value, _) => SwitchListTile(
-              dense: true,
-              title: Text(
-                LocaleKeys.DarkTheme.tr(),
-                style: TextStyle(fontSize: 13),
-              ),
-              value: value,
-              onChanged: (newValue) => settings.seTheme(newValue),
-              activeColor: Colors.indigo,
+            const Divider(
+              color: Colors.grey,
+              height: 1,
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Selector<SettingsProvider, int>(
-            selector: (_, sett) => sett.firstDay,
-            builder: (context, value, _) => ChooseSetting(
-              title: LocaleKeys.BeginWeek.tr(),
-              listValue: settings.dayOfWeek[value].tr(),
-              value: value,
-              onTap: settings.setFirstDay,
+            SizedBox(
+              height: 10,
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Selector<SettingsProvider, int>(
-            selector: (_, sett) => sett.language,
-            builder: (context, value, _) {
-              return ChooseSetting(
-                title: LocaleKeys.Language.tr(),
-                listValue: settings.languageList[value],
+            Selector<SettingsProvider, bool>(
+              selector: (_, sett) => sett.hour24,
+              builder: (context, value, _) => SwitchListTile(
+                dense: true,
+                title: Text(
+                  LocaleKeys.HourFMT.tr(),
+                  style: TextStyle(fontSize: 13),
+                ),
                 value: value,
-                onTap: settings.setLanguage,
-              );
-            },
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          InkWell(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    LocaleKeys.Backup.tr(),
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(14),
-                    child: Icon(
-                      Icons.keyboard_arrow_right,
-                      size: 18,
-                    ),
-                  )
-                ],
+                onChanged: (newValue) => settings.setHour24(newValue),
+                activeColor: Colors.indigo,
               ),
             ),
-            onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BackupScreen(),
-                )),
-          ),
-        ],
+            SizedBox(
+              height: 10,
+            ),
+            Selector<SettingsProvider, bool>(
+              selector: (_, sett) => sett.darkTheme,
+              builder: (context, value, _) => SwitchListTile(
+                dense: true,
+                title: Text(
+                  LocaleKeys.DarkTheme.tr(),
+                  style: TextStyle(fontSize: 13),
+                ),
+                value: value,
+                onChanged: (newValue) => settings.seTheme(newValue),
+                activeColor: Colors.indigo,
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Selector<SettingsProvider, int>(
+              selector: (_, sett) => sett.firstDay,
+              builder: (context, value, _) => ChooseSetting(
+                title: LocaleKeys.BeginWeek.tr(),
+                listValue: settings.dayOfWeek[value].tr(),
+                value: value,
+                onTap: settings.setFirstDay,
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Selector<SettingsProvider, int>(
+              selector: (_, sett) => sett.language,
+              builder: (context, value, _) {
+                return ChooseSetting(
+                  title: LocaleKeys.Language.tr(),
+                  listValue: settings.languageList[value],
+                  value: value,
+                  onTap: settings.setLanguage,
+                );
+              },
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            InkWell(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      LocaleKeys.Backup.tr(),
+                      style:
+                          TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(14),
+                      child: Icon(
+                        Icons.keyboard_arrow_right,
+                        size: 18,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BackupScreen(),
+                  )),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            const Divider(
+              color: Colors.grey,
+              height: 1,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            InkWell(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      LocaleKeys.Calendar.tr(),
+                      style:
+                          TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(14),
+                      child: Icon(
+                        Icons.keyboard_arrow_right,
+                        size: 18,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CalendarScreen(),
+                  )),
+            ),
+          ],
+        ),
       ),
     );
   }

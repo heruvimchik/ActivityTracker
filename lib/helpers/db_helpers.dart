@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
-import 'package:upTimer/models/project.dart';
+import 'package:activityTracker/models/project.dart';
 
 class DBHelper {
   DBHelper._();

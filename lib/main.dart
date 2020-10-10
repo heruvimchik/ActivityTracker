@@ -1,21 +1,23 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:upTimer/providers/auth_provider.dart';
-import 'package:upTimer/providers/days_provider.dart';
-import 'package:upTimer/providers/scroll_provider.dart';
-import 'package:upTimer/widgets/drawer.dart';
+import 'package:activityTracker/providers/auth_provider.dart';
+import 'package:activityTracker/providers/days_provider.dart';
+import 'package:activityTracker/providers/scroll_provider.dart';
+import 'package:activityTracker/widgets/day_grouping.dart';
+import 'package:activityTracker/widgets/drawer.dart';
 import 'package:tuple/tuple.dart';
 import 'generated/codegen_loader.g.dart';
 import 'helpers/themes.dart';
 import 'providers/projects_provider.dart';
 import 'providers/settings_provider.dart';
 import 'screens/add_project_screen.dart';
-import 'screens/charts_screen.dart';
+import 'screens/backup/export_screen.dart';
+import 'screens/charts/charts_screen.dart';
 import 'screens/projects_screen.dart';
 import 'widgets/line.dart';
 import 'widgets/navigation_bar.dart';
@@ -84,7 +86,7 @@ class MyApp extends StatelessWidget {
                 localizationsDelegates: context.localizationDelegates,
                 supportedLocales: context.supportedLocales,
                 locale: context.supportedLocales[data.item2],
-                title: 'Up Timer',
+                title: 'Activity Tracker',
                 theme: data.item1 ? darkTheme : lightTheme,
                 home: child,
               );
@@ -106,14 +108,33 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final _tabs = [
+      NavigationBarTab(
+        title: LocaleKeys.Timeline.tr(),
+        icon: Icons.timeline,
+      ),
+      NavigationBarTab(
+        title: LocaleKeys.Activities.tr(),
+        icon: Icons.update, // Icons.queue,
+      ),
+      NavigationBarTab(
+        title: LocaleKeys.Report.tr(),
+        icon: CupertinoIcons.chart_pie_fill,
+      ),
+      NavigationBarTab(
+        title: LocaleKeys.Export.tr(),
+        icon: Icons.cloud_upload,
+      ),
+    ];
     return Scaffold(
+      // extendBody: true,
       drawer: AppDrawer(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         iconTheme: IconThemeData(
             color: Theme.of(context).appBarTheme.actionsIconTheme.color),
         backgroundColor: Theme.of(context).backgroundColor,
-        title: Text('Up Timer'),
+        title: Text('Activity Tracker'),
         actions: <Widget>[
           RowAppBar(),
         ],
@@ -123,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (daysProvider.days == null || daysProvider.days.length == 0)
             return ShowImage();
           return ScrollablePositionedList.builder(
-            itemBuilder: (ctx, index) => daysProvider.days[index].build(ctx),
+            itemBuilder: (ctx, index) => DayGrouping(daysProvider.days[index]),
             itemCount: daysProvider.days.length,
             itemScrollController:
                 context.read<ScrollProvider>().itemScrollController,
@@ -131,6 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }),
         ProjectsScreen(),
         ChartsScreen(),
+        ExportScreen(),
       ].elementAt(_selectedIndex),
       floatingActionButton: FloatingActionButton(
         child: Icon(
@@ -153,6 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onChangeTabIndex: (index) {
           if (_selectedIndex != index) setState(() => _selectedIndex = index);
         },
+        tabs: _tabs,
       ),
     );
   }
@@ -171,7 +194,7 @@ class _RowAppBarState extends State<RowAppBar> {
         initialDateRange: dateRange ??
             DateTimeRange(start: DateTime.now(), end: DateTime.now()),
         context: ctx,
-        firstDate: DateTime(1900),
+        firstDate: DateTime(2000),
         lastDate: DateTime(2100));
     if (date != null && date != dateRange) {
       context.read<DaysProvider>().dateRange = date;

@@ -55,5 +55,19 @@
   "ErrorDelete": "Error: unable to delete data",
   "DeleteBackup": "Do you want to delete this backup?",
   "RestoreBackup": "Do you want to restore this backup?",
-  "ErrorLogin": "Error: unable to login"
+  "ErrorLogin": "Error: unable to login",
+  "Mon": "Mon",
+  "Tue": "Tue",
+  "Wed": "Wed",
+  "Thu": "Thu",
+  "Fri": "Fri",
+  "Sat": "Sat",
+  "Sun": "Sun",
+  "Calendar": "Calendar",
+  "Records": "Records",
+  "DailyActivity": "Daily activity",
+  "Statistic": "Statistic",
+  "D": "D",
+  "Y": "Y",
+  "All": "All"
 }

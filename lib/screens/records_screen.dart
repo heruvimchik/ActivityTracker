@@ -1,32 +1,59 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
-import 'package:upTimer/helpers/timer_handler.dart';
-import 'package:upTimer/models/project.dart';
-import 'package:upTimer/providers/projects_provider.dart';
-import 'package:upTimer/widgets/day_grouping.dart';
-import 'package:upTimer/widgets/timer_records.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
+import 'package:activityTracker/helpers/timer_handler.dart';
+import 'package:activityTracker/models/project.dart';
+import 'package:activityTracker/providers/days_provider.dart';
+import 'package:activityTracker/providers/projects_provider.dart';
+import 'package:activityTracker/screens/charts/bar_chart_screen.dart';
+import 'package:activityTracker/widgets/day_grouping.dart';
+import 'package:activityTracker/widgets/navigation_bar.dart';
+import 'package:activityTracker/widgets/timer_records.dart';
 
 import 'add_project_screen.dart';
 import 'add_record_screen.dart';
+import 'charts/line_chart_screen.dart';
 
 enum Options { addRecord, editProject, deleteProject }
 
-class RecordsScreen extends StatelessWidget {
+class RecordsScreen extends StatefulWidget {
   final Project project;
+  RecordsScreen({this.project});
 
-  const RecordsScreen({Key key, this.project}) : super(key: key);
+  @override
+  _RecordsScreenState createState() => _RecordsScreenState();
+}
+
+class _RecordsScreenState extends State<RecordsScreen> {
+  int _selectedIndex = 0;
+
+  final _tabs = [
+    NavigationBarTab(
+      title: LocaleKeys.Records.tr(),
+      icon: Icons.timer,
+    ),
+    NavigationBarTab(
+      title: LocaleKeys.DailyActivity.tr(),
+      icon: CupertinoIcons.chart_bar_alt_fill,
+    ),
+    NavigationBarTab(
+      title: LocaleKeys.Statistic.tr(),
+      icon: Icons.show_chart,
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     final prj = Provider.of<ProjectsProvider>(context).projects.firstWhere(
-        (proj) => proj.projectID == project.projectID,
+        (proj) => proj.projectID == widget.project.projectID,
         orElse: () => null);
 
     if (prj == null) return Text('');
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      extendBody: true,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         iconTheme: IconThemeData(
             color: Theme.of(context).appBarTheme.actionsIconTheme.color),
@@ -35,7 +62,10 @@ class RecordsScreen extends StatelessWidget {
           leading: CircleAvatar(
             child: Text(
               '${prj.description.trim().substring(0, 1)}',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                  color: prj.color.computeLuminance() > 0.5
+                      ? Colors.black
+                      : Colors.white),
               textAlign: TextAlign.center,
             ),
             backgroundColor: Color(prj.color.value),
@@ -58,7 +88,7 @@ class RecordsScreen extends StatelessWidget {
               if (selected == Options.addRecord) {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => AddRecordScreen(
-                        record: null, projectId: project.projectID)));
+                        record: null, projectId: widget.project.projectID)));
               } else if (selected == Options.deleteProject) {
                 showDialog(
                   context: context,
@@ -71,7 +101,7 @@ class RecordsScreen extends StatelessWidget {
                               Navigator.of(ctx).pop();
                               context
                                   .read<ProjectsProvider>()
-                                  .deleteProject(project);
+                                  .deleteProject(widget.project);
                             },
                             child: Text(LocaleKeys.Yes.tr())),
                         FlatButton(
@@ -137,68 +167,88 @@ class RecordsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListRecords(projectId: project.projectID),
+      body: <Widget>[
+        ListRecords(projectId: widget.project.projectID),
+        BarChartScreen(project: prj),
+        Consumer<DaysProvider>(
+          builder: (context, daysProvider, _) {
+            final List<MyRow> days = [];
+            daysProvider.initialDays.forEach((day) {
+              final prj = day.entries.firstWhere(
+                  (p) => p.projectID == widget.project.projectID,
+                  orElse: () => null);
+              if (prj != null) {
+                List<Record> rec = prj.records
+                    .where((element) => element.endTime != null)
+                    .toList();
+                days.add(MyRow(
+                    day.date,
+                    rec.fold(
+                        0,
+                        (double sum, Record rec) =>
+                            sum +
+                            rec.endTime
+                                    .difference(rec.startTime)
+                                    .inSeconds
+                                    .toDouble() /
+                                3600)));
+              }
+            });
+            return LineChartScreen(days: days, color: prj.color);
+          },
+        ),
+      ].elementAt(_selectedIndex),
       floatingActionButton: isRunning(prj)
           ? FloatingActionButton(
-              onPressed: () {
-                context.read<ProjectsProvider>().stopRecord(project.projectID);
-              },
-              backgroundColor: Colors.red,
+              onPressed: () => context
+                  .read<ProjectsProvider>()
+                  .stopRecord(widget.project.projectID),
+              backgroundColor: Colors.red.withOpacity(0.8),
               child: Icon(Icons.pause, color: Colors.white))
           : FloatingActionButton(
-              onPressed: () {
-                context.read<ProjectsProvider>().addRecord(project.projectID);
-              },
-              backgroundColor: Colors.indigo,
+              onPressed: () => context
+                  .read<ProjectsProvider>()
+                  .addRecord(widget.project.projectID),
+              backgroundColor: Colors.indigo.withOpacity(0.8),
               child: Icon(Icons.play_arrow, color: Colors.white),
             ),
+      bottomNavigationBar: NavigationBar(
+        tabIndex: _selectedIndex,
+        onChangeTabIndex: (index) {
+          if (_selectedIndex != index) setState(() => _selectedIndex = index);
+        },
+        tabs: _tabs,
+      ),
     );
   }
 }
 
 class ListRecords extends StatelessWidget {
   final String projectId;
-
-  const ListRecords({Key key, this.projectId}) : super(key: key);
-
-  List<DayGroupingRecords> _groupDaysRecords(
-      List<DayGroupingRecords> days, Record record) {
-    bool newDay = days.isEmpty ||
-        !days.any((DayGroupingRecords day) =>
-            day.date.year == record.startTime.year &&
-            day.date.month == record.startTime.month &&
-            day.date.day == record.startTime.day);
-    if (newDay) {
-      days.add(DayGroupingRecords(
-          date: DateTime(
-            record.startTime.year,
-            record.startTime.month,
-            record.startTime.day,
-          ),
-          projectID: projectId));
-    }
-
-    days
-        .firstWhere((day) =>
-            day.date.year == record.startTime.year &&
-            day.date.month == record.startTime.month &&
-            day.date.day == record.startTime.day)
-        .daysRecords
-        .add(record);
-    return days;
-  }
+  const ListRecords({this.projectId});
 
   @override
   Widget build(BuildContext context) {
-    final prj = Provider.of<ProjectsProvider>(context, listen: false)
-        .projects
-        .firstWhere((prj) => prj.projectID == projectId);
-    List<DayGroupingRecords> days = prj.records.reversed
-        .fold(<DayGroupingRecords>[], _groupDaysRecords)
-          ..sort((a, b) => b.date.compareTo(a.date));
-    return ListView.builder(
-      itemBuilder: (_, index) => days[index],
-      itemCount: days.length,
+    return Consumer<DaysProvider>(
+      builder: (context, daysProvider, _) {
+        List<DayGroupingRecords> recordsByDays = [];
+        daysProvider.initialDays.forEach((day) {
+          final prj = day.entries
+              .firstWhere((p) => p.projectID == projectId, orElse: () => null);
+          if (prj != null) {
+            recordsByDays.add(DayGroupingRecords(
+              date: day.date,
+              projectID: projectId,
+              daysRecords: prj.records.reversed.toList(),
+            ));
+          }
+        });
+
+        return ListView.builder(
+          itemBuilder: (_, index) => recordsByDays[index],
+          itemCount: recordsByDays.length,
+        );
+      },
     );
   }
 }

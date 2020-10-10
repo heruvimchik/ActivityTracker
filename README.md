@@ -1,4 +1,4 @@
-# time_to_act
+# ActivityTracker
 
 A new Flutter application.
 

@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:upTimer/models/project.dart';
-import 'package:upTimer/widgets/day_grouping.dart';
+import 'package:activityTracker/models/project.dart';
+
+class Days {
+  final DateTime date;
+  final List<Project> entries = <Project>[];
+  Days(this.date);
+}
 
 class DaysProvider with ChangeNotifier {
-  List<DayGrouping> _days = [];
-  List<DayGrouping> _initialDays = [];
+  List<Days> _days = [];
+  List<Days> _initialDays = [];
   DateTimeRange _dateRange;
 
-  List<DayGrouping> get days => _days;
+  List<Days> get days => [..._days];
+  List<Days> get initialDays => [..._initialDays];
   DateTimeRange get dateRange => _dateRange;
 
   Future<void> setProjectsDays(List<Project> value) async {
-    _initialDays = value.reversed.fold(<DayGrouping>[], _groupDays);
+    _initialDays = value.reversed.fold(<Days>[], _groupDays);
     _initialDays.sort((a, b) => b.date.compareTo(a.date));
     _notify();
     return;
@@ -20,25 +26,30 @@ class DaysProvider with ChangeNotifier {
 
   void addProjectDays(Project project) {
     final record = project.records[0];
+    final newProj = Project(
+        color: project.color,
+        projectID: project.projectID,
+        description: project.description,
+        records: <Record>[record]);
     bool newDay = _initialDays.isEmpty ||
-        !_initialDays.any((DayGrouping day) =>
+        !_initialDays.any((Days day) =>
             day.date.year == record.startTime.year &&
             day.date.month == record.startTime.month &&
             day.date.day == record.startTime.day);
     if (newDay) {
-      _initialDays.add(DayGrouping(DateTime(
+      _initialDays.add(Days(DateTime(
         record.startTime.year,
         record.startTime.month,
         record.startTime.day,
       )));
     }
     _initialDays
-        .firstWhere((DayGrouping day) =>
+        .firstWhere((Days day) =>
             day.date.year == record.startTime.year &&
             day.date.month == record.startTime.month &&
             day.date.day == record.startTime.day)
         .entries
-        .insert(0, project);
+        .insert(0, newProj);
     _notify();
   }
 
@@ -62,7 +73,7 @@ class DaysProvider with ChangeNotifier {
   }
 
   void deleteRecordDays(String projectId, String recordID) {
-    for (DayGrouping day in _initialDays) {
+    for (Days day in _initialDays) {
       final p = day.entries.indexWhere((entry) => entry.projectID == projectId);
       if (p < 0) continue;
       final r =
@@ -76,21 +87,30 @@ class DaysProvider with ChangeNotifier {
     _notify();
   }
 
+  void deleteProjectInDay(String projectId, DateTime date) {
+    Days day = _initialDays.firstWhere((element) => element.date == date,
+        orElse: () => null);
+    if (day == null) return;
+    day.entries.removeWhere((entry) => entry.projectID == projectId);
+    if (day.entries.isEmpty) _initialDays.remove(day);
+    _notify();
+  }
+
   bool addNewDay(Project proj, Record record) {
     bool newDay = _initialDays.isEmpty ||
-        !_initialDays.any((DayGrouping day) =>
+        !_initialDays.any((Days day) =>
             day.date.year == record.startTime.year &&
             day.date.month == record.startTime.month &&
             day.date.day == record.startTime.day);
     if (newDay) {
-      _initialDays.add(DayGrouping(DateTime(
+      _initialDays.add(Days(DateTime(
         record.startTime.year,
         record.startTime.month,
         record.startTime.day,
       )));
     }
 
-    final dayInit = _initialDays.indexWhere((DayGrouping day) =>
+    final dayInit = _initialDays.indexWhere((Days day) =>
         day.date.year == record.startTime.year &&
         day.date.month == record.startTime.month &&
         day.date.day == record.startTime.day);
@@ -114,7 +134,7 @@ class DaysProvider with ChangeNotifier {
   }
 
   void updateRecordDays(String projectID, Record record) {
-    for (DayGrouping day in _initialDays) {
+    for (Days day in _initialDays) {
       final p = day.entries.indexWhere((entry) => entry.projectID == projectID);
       if (p < 0) continue;
       final r = day.entries[p].records
@@ -156,22 +176,21 @@ class DaysProvider with ChangeNotifier {
     _notify();
   }
 
-  List<DayGrouping> _groupDays(List<DayGrouping> days, Project project) {
-    days = project.records.reversed.fold(days,
-        (List<DayGrouping> daysRecords, Record record) {
+  List<Days> _groupDays(List<Days> days, Project project) {
+    days = project.records.fold(days, (List<Days> daysRecords, Record record) {
       bool newDay = daysRecords.isEmpty ||
-          !daysRecords.any((DayGrouping day) =>
+          !daysRecords.any((Days day) =>
               day.date.year == record.startTime.year &&
               day.date.month == record.startTime.month &&
               day.date.day == record.startTime.day);
       if (newDay) {
-        daysRecords.add(DayGrouping(DateTime(
+        daysRecords.add(Days(DateTime(
           record.startTime.year,
           record.startTime.month,
           record.startTime.day,
         )));
       }
-      final day = daysRecords.indexWhere((DayGrouping day) =>
+      final day = daysRecords.indexWhere((Days day) =>
           day.date.year == record.startTime.year &&
           day.date.month == record.startTime.month &&
           day.date.day == record.startTime.day);

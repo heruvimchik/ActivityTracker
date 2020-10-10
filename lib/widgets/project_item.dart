@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:upTimer/helpers/timer_handler.dart';
-import 'package:upTimer/providers/projects_provider.dart';
-import 'package:upTimer/providers/scroll_provider.dart';
-import 'package:upTimer/screens/records_screen.dart';
-import 'package:upTimer/widgets/timer_records.dart';
+import 'package:activityTracker/helpers/timer_handler.dart';
+import 'package:activityTracker/providers/projects_provider.dart';
+import 'package:activityTracker/providers/scroll_provider.dart';
+import 'package:activityTracker/screens/records_screen.dart';
+import 'package:activityTracker/widgets/timer_records.dart';
 import '../models/project.dart';
 
 class ProjectItem extends StatelessWidget {
@@ -30,7 +30,10 @@ class ProjectItem extends StatelessWidget {
           leading: CircleAvatar(
             child: Text(
               '${project.description.trim().substring(0, 1)}',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                  color: project.color.computeLuminance() > 0.5
+                      ? Colors.black
+                      : Colors.white),
               textAlign: TextAlign.center,
             ),
             backgroundColor: Color(project.color.value),

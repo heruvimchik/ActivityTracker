@@ -1,11 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:upTimer/helpers/timer_handler.dart';
-import 'package:upTimer/providers/days_provider.dart';
+import 'package:activityTracker/helpers/timer_handler.dart';
+import 'package:activityTracker/providers/days_provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:upTimer/helpers/db_helpers.dart';
-import 'package:upTimer/models/project.dart';
+import 'package:activityTracker/helpers/db_helpers.dart';
+import 'package:activityTracker/models/project.dart';
 
 class ProjectsProvider with ChangeNotifier {
   final DaysProvider _daysProvider;
@@ -38,17 +38,25 @@ class ProjectsProvider with ChangeNotifier {
       FlutterLocalNotificationsPlugin();
 
   Future<void> _initLocalNotification() async {
-    var initializationSettingsAndroid =
+    final initializationSettingsAndroid =
         AndroidInitializationSettings('ic_launcher');
 
-    var initializationSettingsIOS = IOSInitializationSettings(
+    final initializationSettingsIOS = IOSInitializationSettings(
         requestAlertPermission: false,
         requestBadgePermission: false,
         requestSoundPermission: false,
         onDidReceiveLocalNotification: null);
 
-    var initializationSettings = InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
+    final MacOSInitializationSettings initializationSettingsMacOS =
+        MacOSInitializationSettings(
+            requestAlertPermission: false,
+            requestBadgePermission: false,
+            requestSoundPermission: false);
+
+    final initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsIOS,
+        macOS: initializationSettingsMacOS);
 
     //await _deleteNotificationChannel();
     //await _createNotificationChannel();
@@ -109,7 +117,7 @@ class ProjectsProvider with ChangeNotifier {
       'NotificationChannel',
       'description',
       color: project.color,
-      visibility: NotificationVisibility.Public,
+      visibility: NotificationVisibility.public,
       showWhen: start,
       when: DateTime(now.year, now.month, now.day, now.hour, now.minute,
               now.second - run.inSeconds)
@@ -123,7 +131,8 @@ class ProjectsProvider with ChangeNotifier {
     );
     final iOSPlatformChannelSpecifics = IOSNotificationDetails();
     final platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
     final id = project.projectID.replaceAll('-', '');
     final number = int.parse(id.substring(0, 8), radix: 16) & 0x7fffffff;
     await flutterLocalNotificationsPlugin.show(
@@ -225,7 +234,6 @@ class ProjectsProvider with ChangeNotifier {
       startTime: DateTime.now(),
       endTime: null,
     );
-
     _projects[index].records.add(record);
     notifyListeners();
     _daysProvider.addNewRecord(_projects[index], record);
@@ -246,7 +254,6 @@ class ProjectsProvider with ChangeNotifier {
         _projects[index].records.indexWhere((timer) => timer.endTime == null);
     if (indexStop < 0) return;
     final start = _projects[index].records[indexStop].startTime;
-
     if (now.year != start.year ||
         now.month != start.month ||
         now.day != start.day) {
@@ -313,6 +320,31 @@ class ProjectsProvider with ChangeNotifier {
     if (running >= 0) {
       _showNotification(project: _projects[index], start: true);
     } else if (runningDeleted?.recordID == recordID)
+      _showNotification(project: _projects[index], start: false);
+  }
+
+  Future<void> deleteDayProject({Project project, DateTime date}) async {
+    final index =
+        _projects.indexWhere((prj) => prj.projectID == project.projectID);
+    if (index < 0) return;
+    bool runningDeleted = false;
+    project.records.forEach((deletedRecord) {
+      _projects[index]
+          .records
+          .removeWhere((record) => record.recordID == deletedRecord.recordID);
+      if (deletedRecord.endTime == null) runningDeleted = true;
+    });
+
+    notifyListeners();
+    _daysProvider.deleteProjectInDay(project.projectID, date);
+
+    await DBHelper.db.update(_projects[index]);
+    final running =
+        _projects[index].records.indexWhere((timer) => timer.endTime == null);
+
+    if (running >= 0) {
+      _showNotification(project: _projects[index], start: true);
+    } else if (runningDeleted)
       _showNotification(project: _projects[index], start: false);
   }
 

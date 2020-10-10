@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:upTimer/providers/auth_provider.dart';
+import 'package:activityTracker/providers/auth_provider.dart';
 
 import 'google_drive_screen.dart';
 

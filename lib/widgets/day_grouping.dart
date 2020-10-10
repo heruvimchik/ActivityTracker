@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
-import 'package:upTimer/helpers/timer_handler.dart';
-import 'package:upTimer/models/project.dart';
-import 'package:upTimer/providers/projects_provider.dart';
-import 'package:upTimer/providers/settings_provider.dart';
-import 'package:upTimer/screens/add_record_screen.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
+import 'package:activityTracker/helpers/timer_handler.dart';
+import 'package:activityTracker/models/project.dart';
+import 'package:activityTracker/providers/days_provider.dart';
+import 'package:activityTracker/providers/projects_provider.dart';
+import 'package:activityTracker/providers/settings_provider.dart';
+import 'package:activityTracker/screens/add_record_screen.dart';
 
 import 'project_item.dart';
 
 class DayGrouping extends StatelessWidget {
-  final DateTime date;
-  final List<Project> entries = <Project>[];
+  final Days day;
 
-  DayGrouping(this.date);
+  DayGrouping(this.day);
 
   bool get _isRunning {
-    final running = entries.indexWhere((prj) {
+    final running = day.entries.indexWhere((prj) {
       for (Record rec in prj.records) {
         if (rec.endTime == null) return true;
       }
@@ -32,7 +32,7 @@ class DayGrouping extends StatelessWidget {
     final now = DateTime.now();
     final yesterday = DateTime(now.year, now.month, now.day - 1);
     Duration run = Duration();
-    entries.forEach((entry) {
+    day.entries.forEach((entry) {
       final timersDays =
           entry.records.where((record) => record.endTime != null);
       run = Duration(
@@ -42,13 +42,15 @@ class DayGrouping extends StatelessWidget {
                   sum + t.endTime.difference(t.startTime).inSeconds));
     });
     return ExpansionTile(
-      initiallyExpanded:
-          isNow(now, date) || isNow(yesterday, date) || _isRunning,
-      key: Key(date.toString()),
+      initiallyExpanded: isNow(now, day.date) ||
+          isNow(yesterday, day.date) ||
+          day.entries.length == 1 ||
+          _isRunning,
+      key: Key(day.date.toString()),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          DateName(date: date),
+          DateName(date: day.date),
           Text(
             run.formatDuration(),
             style: TextStyle(color: Colors.grey[700], fontSize: 15),
@@ -59,11 +61,35 @@ class DayGrouping extends StatelessWidget {
         ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: ProjectItem(project: entries[index], scrollable: true),
+            itemBuilder: (context, index) => Dismissible(
+                  key: Key('${day.entries[index].projectID}'),
+                  background: Card(
+                    color: Theme.of(context).errorColor,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child:
+                              Icon(Icons.delete, color: Colors.white, size: 30),
+                        ),
+                      ],
+                    ),
+                    margin:
+                        EdgeInsets.only(right: 15, left: 15, top: 4, bottom: 4),
+                  ),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) {
+                    context.read<ProjectsProvider>().deleteDayProject(
+                        project: day.entries[index], date: day.date);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: ProjectItem(
+                        project: day.entries[index], scrollable: true),
+                  ),
                 ),
-            itemCount: entries.length),
+            itemCount: day.entries.length),
       ],
     );
   }
@@ -72,8 +98,9 @@ class DayGrouping extends StatelessWidget {
 class DayGroupingRecords extends StatelessWidget {
   final DateTime date;
   final projectID;
-  final List<Record> daysRecords = <Record>[];
-  DayGroupingRecords({this.date, this.projectID});
+  final List<Record> daysRecords;
+
+  const DayGroupingRecords({this.date, this.projectID, this.daysRecords});
 
   bool get _isRunning {
     for (Record rec in daysRecords) {
@@ -97,8 +124,10 @@ class DayGroupingRecords extends StatelessWidget {
     final hour24 = context.select((SettingsProvider value) => value.hour24);
     final timeFormat = hour24 ? DateFormat('H:mm') : DateFormat('h:mm a');
     return ExpansionTile(
-      initiallyExpanded:
-          isNow(now, date) || isNow(yesterday, date) || _isRunning,
+      initiallyExpanded: isNow(now, date) ||
+          isNow(yesterday, date) ||
+          daysRecords.length == 1 ||
+          _isRunning,
       key: Key(date.toString()),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -116,10 +145,17 @@ class DayGroupingRecords extends StatelessWidget {
           physics: NeverScrollableScrollPhysics(),
           itemBuilder: (_, index) => Dismissible(
             key: Key('_rec_${daysRecords[index].recordID}'),
-            background: Container(
+            background: Card(
               color: Theme.of(context).errorColor,
-              child: Icon(Icons.delete, color: Colors.white, size: 30),
-              alignment: Alignment.centerRight,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Icon(Icons.delete, color: Colors.white, size: 30),
+                  ),
+                ],
+              ),
               margin: EdgeInsets.only(right: 15, left: 15, top: 4, bottom: 4),
             ),
             direction: DismissDirection.endToStart,

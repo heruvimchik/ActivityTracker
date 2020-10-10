@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:upTimer/providers/settings_provider.dart';
+import 'package:activityTracker/providers/settings_provider.dart';
 
 class ShowImage extends StatelessWidget {
   const ShowImage({
@@ -23,10 +23,14 @@ class ShowImage extends StatelessWidget {
 class Line extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final darkmode =
+        context.select<SettingsProvider, bool>((value) => value.darkTheme);
     return Container(
-      width: MediaQuery.of(context).size.width * 0.9,
-      height: 0.5,
-      decoration: BoxDecoration(border: Border(top: BorderSide(width: 0.1))),
+      width: MediaQuery.of(context).size.width * 0.95,
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(width: 0.07)),
+        color: darkmode ? Colors.white70 : Colors.black38,
+      ),
     );
   }
 }

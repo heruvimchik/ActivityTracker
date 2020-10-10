@@ -4,12 +4,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
-import 'package:upTimer/helpers/timer_handler.dart';
-import 'package:upTimer/models/project.dart';
-import 'package:upTimer/providers/projects_provider.dart';
-import 'package:upTimer/providers/settings_provider.dart';
-import 'package:upTimer/widgets/line.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
+import 'package:activityTracker/helpers/timer_handler.dart';
+import 'package:activityTracker/models/project.dart';
+import 'package:activityTracker/providers/projects_provider.dart';
+import 'package:activityTracker/providers/settings_provider.dart';
+import 'package:activityTracker/widgets/line.dart';
 
 class AddRecordScreen extends StatefulWidget {
   final String projectId;
@@ -142,7 +142,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       onTap: () async {
                         final date = await showDatePicker(
                             context: context,
-                            firstDate: DateTime(1900),
+                            firstDate: DateTime(2000),
                             initialDate: dateNew ?? DateTime.now(),
                             lastDate: endNew == null
                                 ? DateTime.now()

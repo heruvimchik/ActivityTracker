@@ -24,11 +24,12 @@ class Project {
 
   Project({this.projectID, this.description, this.records, this.color});
 
-  Project copyWith({String updDescription, Color updColor}) {
+  Project copyWith(
+      {String updDescription, Color updColor, List<Record> updRecords}) {
     return Project(
         projectID: this.projectID,
         description: updDescription ?? this.description,
-        records: this.records,
+        records: updRecords ?? this.records,
         color: updColor ?? this.color);
   }
 

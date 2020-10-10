@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
 
 class SettingsProvider with ChangeNotifier {
   final List<String> _dayOfWeek = [

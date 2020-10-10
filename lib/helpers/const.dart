@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 final date24h = DateFormat('MMM dd yyyy HH:mm:ss', LocaleKeys.locale.tr());

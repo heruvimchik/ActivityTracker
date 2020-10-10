@@ -1,4 +1,4 @@
-package com.romquo.upTimer;
+package com.romquo.activityTracker;
 
 import io.flutter.embedding.android.FlutterActivity;
 

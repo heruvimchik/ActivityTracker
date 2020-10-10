@@ -3,10 +3,10 @@ import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:upTimer/generated/locale_keys.g.dart';
-import 'package:upTimer/providers/auth_provider.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
+import 'package:activityTracker/providers/auth_provider.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
-import 'package:upTimer/providers/settings_provider.dart';
+import 'package:activityTracker/providers/settings_provider.dart';
 
 import 'restore_screen.dart';
 
@@ -41,6 +41,7 @@ class GoogleDriveScreen extends StatelessWidget {
                       } catch (error) {
                         FlushbarHelper.createError(
                                 message: LocaleKeys.ErrorBackup.tr(),
+                                //message: error.toString(),
                                 duration: Duration(seconds: 2))
                             .show(context);
                       }
