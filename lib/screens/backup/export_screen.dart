@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:activityTracker/widgets/line.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,17 @@ class ExportScreen extends StatelessWidget {
       if (timersStop.isNotEmpty)
         filteredProjects.add(pro.copyWith(updRecords: timersStop));
     });
-
+    if (filteredProjects.isEmpty) {
+      return dateTimeRange == null
+          ? NoRecordsWidget()
+          : Center(
+              child: Text(
+              'You have no records for selected period',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+              maxLines: 2,
+              overflow: TextOverflow.clip,
+            ));
+    }
     return ExportProjects(filteredProjects: filteredProjects);
   }
 }

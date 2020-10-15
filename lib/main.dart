@@ -134,15 +134,27 @@ class _MyHomePageState extends State<MyHomePage> {
         iconTheme: IconThemeData(
             color: Theme.of(context).appBarTheme.actionsIconTheme.color),
         backgroundColor: Theme.of(context).backgroundColor,
-        title: Text('Activity Tracker'),
+        title: Text(
+          _tabs[_selectedIndex].title,
+          style: TextStyle(fontSize: 14),
+        ),
         actions: <Widget>[
           RowAppBar(),
         ],
       ),
       body: <Widget>[
         Consumer<DaysProvider>(builder: (_, daysProvider, __) {
-          if (daysProvider.days == null || daysProvider.days.length == 0)
-            return ShowImage();
+          if (daysProvider.days == null || daysProvider.days.length == 0) {
+            return daysProvider.dateRange == null
+                ? NoRecordsWidget()
+                : Center(
+                    child: Text(
+                    LocaleKeys.NoActivityPeriod.tr(),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                    maxLines: 2,
+                    overflow: TextOverflow.clip,
+                  ));
+          }
           return ScrollablePositionedList.builder(
             itemBuilder: (ctx, index) => DayGrouping(daysProvider.days[index]),
             itemCount: daysProvider.days.length,
@@ -207,46 +219,40 @@ class _RowAppBarState extends State<RowAppBar> {
     final dateFormat = DateFormat('MMM dd, yy', LocaleKeys.locale.tr());
     return Row(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () => pickRangeDate(context),
-              child: Text(
-                  dateRange != null
-                      ? '${dateFormat.format(dateRange.start)} - ${dateFormat.format(dateRange.end)}'
-                      : '',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color:
-                          Theme.of(context).appBarTheme.actionsIconTheme.color,
-                      fontSize: 15)),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(bottom: 2.2),
+          child: InkWell(
+            onTap: () => pickRangeDate(context),
+            child: Text(
+                dateRange != null
+                    ? '${dateFormat.format(dateRange.start)} - ${dateFormat.format(dateRange.end)}'
+                    : '',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Theme.of(context).appBarTheme.actionsIconTheme.color,
+                    fontSize: 13)),
+          ),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            dateRange == null
-                ? IconButton(
-                    icon: Icon(Icons.filter_list,
+        Padding(
+            padding: EdgeInsets.only(left: 10, right: 10, bottom: 2.2),
+            child: dateRange == null
+                ? InkWell(
+                    child: Icon(Icons.filter_list,
                         color: Theme.of(context)
                             .appBarTheme
                             .actionsIconTheme
                             .color),
-                    onPressed: () => pickRangeDate(context),
+                    onTap: () => pickRangeDate(context),
                   )
-                : IconButton(
-                    icon: Icon(Icons.cancel, color: Colors.redAccent),
-                    onPressed: () {
+                : InkWell(
+                    child: Icon(Icons.cancel, color: Colors.redAccent),
+                    onTap: () {
                       context.read<DaysProvider>().dateRange = null;
                       setState(() => dateRange = null);
                     },
-                  ),
-          ],
-        )
+                  )),
       ],
     );
   }

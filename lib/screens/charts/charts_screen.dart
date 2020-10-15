@@ -55,7 +55,17 @@ class _ChartsScreenState extends State<ChartsScreen> {
             duration: duration));
     });
     projectDuration = projectDuration.reversed.toList();
-    if (projectDuration.length == 0) return ShowImage();
+    if (projectDuration.isEmpty) {
+      return dateTimeRange == null
+          ? NoRecordsWidget()
+          : Center(
+              child: Text(
+              'You have no records for selected period',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+              maxLines: 2,
+              overflow: TextOverflow.clip,
+            ));
+    }
 
     return MediaQuery.of(context).orientation == Orientation.portrait
         ? buildColumn(projectDuration, totalHours)

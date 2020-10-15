@@ -85,7 +85,10 @@ class CodegenLoader extends AssetLoader{
   "Statistic": "Statistic",
   "D": "D",
   "Y": "Y",
-  "All": "All"
+  "All": "All",
+  "NoActivity": "Start new activity, by pressing",
+  "NoActivityPeriod": "You have no records for selected period",
+  "NoRecords": "Start activity or add new record"
 };
 static const Map<String,dynamic> ru = {
   "Timeline": "Хронология",
@@ -158,7 +161,10 @@ static const Map<String,dynamic> ru = {
   "Statistic": "Статистика",
   "D": "Д",
   "Y": "Г",
-  "All": "Все"
+  "All": "Все",
+  "NoActivity": "Начните новую активность, нажав",
+  "NoActivityPeriod": "У вас нет записей за выбранный период",
+  "NoRecords": "Начните активность или добавьте новую запись"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": en, "ru": ru};
 }

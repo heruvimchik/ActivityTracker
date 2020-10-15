@@ -200,11 +200,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
               title: Text(
                 pr.description,
                 style: TextStyle(
-                    color: Theme.of(context)
-                        .appBarTheme
-                        .textTheme
-                        .headline6
-                        .color),
+                    color:
+                        Theme.of(context).appBarTheme.textTheme.headline6.color,
+                    fontSize: 14),
               ),
               leading: CircleAvatar(
                 child: Text(

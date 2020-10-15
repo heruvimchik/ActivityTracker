@@ -51,7 +51,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                   onChanged: (value) => setState(() {}),
                   autofocus: true,
                   controller: _textController,
-                  autovalidate: true,
+                  autovalidateMode: AutovalidateMode.always,
                   validator: (value) {
                     if (value.trim().isEmpty) {
                       return LocaleKeys.PleaseEnterName.tr();

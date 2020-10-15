@@ -243,6 +243,14 @@ class ListRecords extends StatelessWidget {
             ));
           }
         });
+        if (recordsByDays.isEmpty)
+          return Center(
+              child: Text(
+            LocaleKeys.NoRecords.tr(),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            maxLines: 2,
+            overflow: TextOverflow.clip,
+          ));
 
         return ListView.builder(
           itemBuilder: (_, index) => recordsByDays[index],

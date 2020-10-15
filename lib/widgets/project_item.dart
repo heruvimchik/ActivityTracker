@@ -25,7 +25,8 @@ class ProjectItem extends StatelessWidget {
           title: Text(
             project.description,
             style: TextStyle(
-                color: Theme.of(context).appBarTheme.textTheme.headline6.color),
+                color: Theme.of(context).appBarTheme.textTheme.headline6.color,
+                fontSize: 14),
           ),
           leading: CircleAvatar(
             child: Text(

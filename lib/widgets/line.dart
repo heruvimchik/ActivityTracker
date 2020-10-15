@@ -1,22 +1,31 @@
+import 'package:activityTracker/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:activityTracker/providers/settings_provider.dart';
 
-class ShowImage extends StatelessWidget {
-  const ShowImage({
+class NoRecordsWidget extends StatelessWidget {
+  const NoRecordsWidget({
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final darkmode =
-        context.select<SettingsProvider, bool>((value) => value.darkTheme);
     return Center(
-        child: Image.asset(
-      'assets/nodata.png',
-      fit: BoxFit.fill,
-      color: darkmode ? Colors.white70 : Colors.black38,
-    ));
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            LocaleKeys.NoActivity.tr(),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            maxLines: 2,
+            overflow: TextOverflow.clip,
+          ),
+          Icon(Icons.add),
+        ],
+      ),
+    );
   }
 }
 

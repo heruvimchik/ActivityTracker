@@ -69,5 +69,8 @@
   "Statistic": "Statistic",
   "D": "D",
   "Y": "Y",
-  "All": "All"
+  "All": "All",
+  "NoActivity": "Start new activity, by pressing",
+  "NoActivityPeriod": "You have no records for selected period",
+  "NoRecords": "Start activity or add new record"
 }

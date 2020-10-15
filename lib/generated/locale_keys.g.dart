@@ -72,5 +72,8 @@ abstract class  LocaleKeys {
   static const D = 'D';
   static const Y = 'Y';
   static const All = 'All';
+  static const NoActivity = 'NoActivity';
+  static const NoActivityPeriod = 'NoActivityPeriod';
+  static const NoRecords = 'NoRecords';
 
 }

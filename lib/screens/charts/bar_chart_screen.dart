@@ -18,6 +18,17 @@ class BarChartScreen extends StatelessWidget {
     'Sat',
     'Sun',
   ];
+  final List<int> daySort = const [
+    6,
+    7,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+  ];
 
   const BarChartScreen({this.project});
   @override
@@ -30,10 +41,18 @@ class BarChartScreen extends StatelessWidget {
         (double sum, Record rec) =>
             sum +
             rec.endTime.difference(rec.startTime).inSeconds.toDouble() / 3600);
+    double maxy = 0;
+    if (MediaQuery.of(context).orientation == Orientation.portrait)
+      maxy = 60;
+    else
+      maxy = 130;
+    Color col = Theme.of(context).appBarTheme.textTheme.headline6.color;
+    final firstDay = context.select((SettingsProvider value) => value.firstDay);
     List<double> weekdaysTotal = [];
-    for (int day = 1; day <= 7; day++) {
+    for (int day = 0; day <= 6; day++) {
+      final d = daySort[day + 2 - firstDay];
       final weekday =
-          timersStop.where((element) => element.startTime.weekday == day);
+          timersStop.where((element) => element.startTime.weekday == d);
       final value = weekday.fold(
           0.0,
           (double sum, Record rec) =>
@@ -42,13 +61,7 @@ class BarChartScreen extends StatelessWidget {
                   3600);
       weekdaysTotal.add(value);
     }
-    double maxy = 0;
-    if (MediaQuery.of(context).orientation == Orientation.portrait)
-      maxy = 60;
-    else
-      maxy = 130;
-    Color col = Theme.of(context).appBarTheme.textTheme.headline6.color;
-    final firstDay = context.select((SettingsProvider value) => value.firstDay);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.stretch,
