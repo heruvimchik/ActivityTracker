@@ -103,7 +103,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
               ),
             ),
             Container(
-              height: MediaQuery.of(context).size.height * 0.10,
+              height: MediaQuery.of(context).size.height * 0.03,
             )
           ],
         ),

@@ -1,8 +1,8 @@
+import 'package:activityTracker/providers/premium_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:activityTracker/providers/auth_provider.dart';
@@ -22,6 +22,7 @@ import 'screens/projects_screen.dart';
 import 'widgets/line.dart';
 import 'widgets/navigation_bar.dart';
 import 'generated/locale_keys.g.dart';
+import 'widgets/row_app_bar.dart';
 
 // flutter pub run easy_localization:generate --source-dir ./assets/translations
 // flutter pub run easy_localization:generate -S assets/translations -f keys -o locale_keys.g.dart
@@ -43,58 +44,84 @@ void main() async {
 class MyApp extends StatelessWidget {
   Future<void> _initProviders(BuildContext context) async {
     await Provider.of<ProjectsProvider>(context, listen: false).loadDb;
-    await Provider.of<SettingsProvider>(context, listen: false).loadPrefs;
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => ScrollProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SettingsProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => DaysProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) {
-            final daysProv = Provider.of<DaysProvider>(context, listen: false);
-            return ProjectsProvider(daysProv);
-          },
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(),
-        ),
-      ],
-      builder: (context, _) => FutureBuilder(
-        future: _initProviders(context),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return MaterialApp(
-                home: Scaffold(
-                    body: Center(child: Text(LocaleKeys.Loading.tr()))));
-          return Selector<SettingsProvider, Tuple2<bool, int>>(
-            child: MyHomePage(),
-            selector: (_, set) =>
-                Tuple2(set.darkTheme, set.language), //  set.darkTheme,
-            builder: (context, data, child) {
-              context.locale = context.supportedLocales[data.item2];
-              return MaterialApp(
-                localizationsDelegates: context.localizationDelegates,
-                supportedLocales: context.supportedLocales,
-                locale: context.supportedLocales[data.item2],
-                title: 'Activity Tracker',
-                theme: data.item1 ? darkTheme : lightTheme,
-                home: child,
-              );
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => SettingsProvider(),
+            lazy: false,
+          ),
+          ChangeNotifierProvider(
+            create: (_) => DaysProvider(),
+            lazy: false,
+          ),
+          ChangeNotifierProvider(
+            create: (context) {
+              final daysProv =
+                  Provider.of<DaysProvider>(context, listen: false);
+              return ProjectsProvider(daysProv);
             },
-          );
-        },
-      ),
-    );
+            lazy: false,
+          ),
+          ChangeNotifierProvider(
+            create: (_) => PremiumProvider(),
+            lazy: false,
+          ),
+          ChangeNotifierProvider(
+            create: (_) => AuthProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => ScrollProvider(),
+          ),
+        ],
+        builder: (context, child) =>
+            Selector<SettingsProvider, Tuple2<bool, int>>(
+              child: MyHomePage(),
+              selector: (_, set) =>
+                  Tuple2(set.darkTheme, set.language), //  set.darkTheme,
+              builder: (context, data, child) {
+                context.locale = context.supportedLocales[data.item2 ?? 0];
+                return MaterialApp(
+                  localizationsDelegates: context.localizationDelegates,
+                  supportedLocales: context.supportedLocales,
+                  locale: context.supportedLocales[data.item2 ?? 0],
+                  title: 'Activity Tracker',
+                  theme: data.item1 ?? false ? darkTheme : lightTheme,
+                  home: child,
+                );
+              },
+            )
+        // builder: (context, _) => FutureBuilder(
+        //   future: _initProviders(context),
+        //   builder: (context, snapshot) {
+        //     if (snapshot.connectionState == ConnectionState.waiting)
+        //       return MaterialApp(
+        //           home: Scaffold(
+        //               body: Center(
+        //         child: Text(LocaleKeys.Loading.tr()),
+        //       )));
+        //     return Selector<SettingsProvider, Tuple2<bool, int>>(
+        //       child: MyHomePage(),
+        //       selector: (_, set) =>
+        //           Tuple2(set.darkTheme, set.language), //  set.darkTheme,
+        //       builder: (context, data, child) {
+        //         context.locale = context.supportedLocales[data.item2 ?? 0];
+        //         return MaterialApp(
+        //           localizationsDelegates: context.localizationDelegates,
+        //           supportedLocales: context.supportedLocales,
+        //           locale: context.supportedLocales[data.item2 ?? 0],
+        //           title: 'Activity Tracker',
+        //           theme: data.item1 ?? false ? darkTheme : lightTheme,
+        //           home: child,
+        //         );
+        //       },
+        //     );
+        //   },
+        // ),
+        );
   }
 }
 
@@ -105,6 +132,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,71 +221,6 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         tabs: _tabs,
       ),
-    );
-  }
-}
-
-class RowAppBar extends StatefulWidget {
-  @override
-  _RowAppBarState createState() => _RowAppBarState();
-}
-
-class _RowAppBarState extends State<RowAppBar> {
-  DateTimeRange dateRange;
-
-  void pickRangeDate(BuildContext ctx) async {
-    final date = await showDateRangePicker(
-        initialDateRange: dateRange ??
-            DateTimeRange(start: DateTime.now(), end: DateTime.now()),
-        context: ctx,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100));
-    if (date != null && date != dateRange) {
-      context.read<DaysProvider>().dateRange = date;
-      setState(() => dateRange = date);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final dateFormat = DateFormat('MMM dd, yy', LocaleKeys.locale.tr());
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 2.2),
-          child: InkWell(
-            onTap: () => pickRangeDate(context),
-            child: Text(
-                dateRange != null
-                    ? '${dateFormat.format(dateRange.start)} - ${dateFormat.format(dateRange.end)}'
-                    : '',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Theme.of(context).appBarTheme.actionsIconTheme.color,
-                    fontSize: 13)),
-          ),
-        ),
-        Padding(
-            padding: EdgeInsets.only(left: 10, right: 10, bottom: 2.2),
-            child: dateRange == null
-                ? InkWell(
-                    child: Icon(Icons.filter_list,
-                        color: Theme.of(context)
-                            .appBarTheme
-                            .actionsIconTheme
-                            .color),
-                    onTap: () => pickRangeDate(context),
-                  )
-                : InkWell(
-                    child: Icon(Icons.cancel, color: Colors.redAccent),
-                    onTap: () {
-                      context.read<DaysProvider>().dateRange = null;
-                      setState(() => dateRange = null);
-                    },
-                  )),
-      ],
     );
   }
 }

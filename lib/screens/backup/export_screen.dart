@@ -37,15 +37,13 @@ class ExportScreen extends StatelessWidget {
         filteredProjects.add(pro.copyWith(updRecords: timersStop));
     });
     if (filteredProjects.isEmpty) {
-      return dateTimeRange == null
-          ? NoRecordsWidget()
-          : Center(
-              child: Text(
-              'You have no records for selected period',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-              maxLines: 2,
-              overflow: TextOverflow.clip,
-            ));
+      return Center(
+          child: Text(
+        LocaleKeys.NoActivityPeriod.tr(),
+        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+        maxLines: 2,
+        overflow: TextOverflow.clip,
+      ));
     }
     return ExportProjects(filteredProjects: filteredProjects);
   }

@@ -1,3 +1,4 @@
+import 'package:activityTracker/screens/pro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -88,33 +89,8 @@ class AppDrawer extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            InkWell(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      LocaleKeys.Backup.tr(),
-                      style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(14),
-                      child: Icon(
-                        Icons.keyboard_arrow_right,
-                        size: 18,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BackupScreen(),
-                  )),
-            ),
+            _buildInkWell(
+                context, LocaleKeys.Backup.tr(), (context) => BackupScreen()),
             SizedBox(
               height: 10,
             ),
@@ -125,36 +101,45 @@ class AppDrawer extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            InkWell(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      LocaleKeys.Calendar.tr(),
-                      style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(14),
-                      child: Icon(
-                        Icons.keyboard_arrow_right,
-                        size: 18,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CalendarScreen(),
-                  )),
+            _buildInkWell(context, LocaleKeys.Calendar.tr(),
+                (context) => CalendarScreen()),
+            SizedBox(
+              height: 10,
             ),
+            _buildInkWell(context, 'Pro Version', (context) => ProScreen()),
           ],
         ),
       ),
+    );
+  }
+
+  InkWell _buildInkWell(
+      BuildContext context, String text, Widget Function(BuildContext) screen) {
+    return InkWell(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              text,
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            ),
+            Container(
+              margin: const EdgeInsets.all(14),
+              child: Icon(
+                Icons.keyboard_arrow_right,
+                size: 18,
+              ),
+            )
+          ],
+        ),
+      ),
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: screen,
+          )),
     );
   }
 }

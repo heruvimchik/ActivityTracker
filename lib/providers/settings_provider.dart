@@ -13,8 +13,6 @@ class SettingsProvider with ChangeNotifier {
     'English',
     'Русский',
   ];
-
-  Future<void> loadPrefs;
   SharedPreferences _prefs;
   bool _hour24;
   bool _darkTheme;
@@ -29,7 +27,7 @@ class SettingsProvider with ChangeNotifier {
   int get language => _language;
 
   SettingsProvider() {
-    loadPrefs = _getSettings();
+    _getSettings();
   }
 
   Future<void> _getSettings() async {

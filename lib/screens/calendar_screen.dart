@@ -161,7 +161,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           return children;
         },
       ),
-      onDaySelected: (day, events) => setState(() {
+      onDaySelected: (day, events, holidays) => setState(() {
         date = day;
         _selectedEvents = events;
       }),

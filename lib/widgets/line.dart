@@ -18,7 +18,7 @@ class NoRecordsWidget extends StatelessWidget {
         children: [
           Text(
             LocaleKeys.NoActivity.tr(),
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
             maxLines: 2,
             overflow: TextOverflow.clip,
           ),

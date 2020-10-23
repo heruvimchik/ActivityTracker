@@ -247,7 +247,7 @@ class ListRecords extends StatelessWidget {
           return Center(
               child: Text(
             LocaleKeys.NoRecords.tr(),
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
             maxLines: 2,
             overflow: TextOverflow.clip,
           ));

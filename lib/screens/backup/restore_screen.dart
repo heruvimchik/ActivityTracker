@@ -1,4 +1,4 @@
-import 'package:flushbar/flushbar_helper.dart';
+import 'package:activityTracker/helpers/const.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
@@ -8,9 +8,23 @@ import 'package:activityTracker/providers/auth_provider.dart';
 import 'package:activityTracker/providers/projects_provider.dart';
 import 'package:activityTracker/providers/settings_provider.dart';
 
-class RestoreScreen extends StatelessWidget {
+class RestoreScreen extends StatefulWidget {
+  @override
+  _RestoreScreenState createState() => _RestoreScreenState();
+}
+
+class _RestoreScreenState extends State<RestoreScreen> {
   final date24h = DateFormat('MMM dd yyyy HH:mm:ss', LocaleKeys.locale.tr());
   final date12h = DateFormat('MMM dd yyyy hh:mm:ss a', LocaleKeys.locale.tr());
+
+  final _flushBarSuccess =
+      FlushBarMy.succesBar(text: LocaleKeys.SuccessDelete.tr());
+  final _flushBarError = FlushBarMy.errorBar(text: LocaleKeys.ErrorDelete.tr());
+  final _flushBarSuccessDownl =
+      FlushBarMy.succesBar(text: LocaleKeys.SuccessDownload.tr());
+  final _flushBarErrorDownl =
+      FlushBarMy.errorBar(text: LocaleKeys.SuccessDownload.tr());
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context, listen: false);
@@ -56,16 +70,16 @@ class RestoreScreen extends StatelessWidget {
                             await auth.deleteGoogleDriveFile(
                                 gdID: snapshot.data.files[index].id);
                             Navigator.of(ctx).pop(true);
-                            FlushbarHelper.createSuccess(
-                                    message: LocaleKeys.SuccessDelete.tr(),
-                                    duration: Duration(seconds: 2))
-                                .show(context);
+                            if (mounted)
+                              _flushBarSuccess
+                                ..dismiss()
+                                ..show(context);
                           } catch (e) {
                             Navigator.of(ctx).pop(false);
-                            FlushbarHelper.createError(
-                                    message: LocaleKeys.ErrorDelete.tr(),
-                                    duration: Duration(seconds: 2))
-                                .show(context);
+                            if (mounted)
+                              _flushBarError
+                                ..dismiss()
+                                ..show(context);
                           }
                         },
                         child: Text(LocaleKeys.Yes.tr())),
@@ -94,16 +108,15 @@ class RestoreScreen extends StatelessWidget {
                                 await auth.downloadGoogleDriveFile(
                                     gdID: snapshot.data.files[index].id,
                                     projects: proj);
-                                FlushbarHelper.createSuccess(
-                                        message:
-                                            LocaleKeys.SuccessDownload.tr(),
-                                        duration: Duration(seconds: 2))
-                                    .show(context);
+                                if (mounted)
+                                  _flushBarSuccessDownl
+                                    ..dismiss()
+                                    ..show(context);
                               } catch (e) {
-                                FlushbarHelper.createError(
-                                        message: LocaleKeys.ErrorDownload.tr(),
-                                        duration: Duration(seconds: 2))
-                                    .show(context);
+                                if (mounted)
+                                  _flushBarErrorDownl
+                                    ..dismiss()
+                                    ..show(context);
                               }
                             },
                             child: Text(LocaleKeys.Yes.tr())),

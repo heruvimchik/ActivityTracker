@@ -1,5 +1,5 @@
+import 'package:activityTracker/helpers/const.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:activityTracker/generated/locale_keys.g.dart';
@@ -8,7 +8,14 @@ import 'package:activityTracker/providers/auth_provider.dart';
 
 import 'google_drive_screen.dart';
 
-class BackupScreen extends StatelessWidget {
+class BackupScreen extends StatefulWidget {
+  @override
+  _BackupScreenState createState() => _BackupScreenState();
+}
+
+class _BackupScreenState extends State<BackupScreen> {
+  final _flushBarError = FlushBarMy.errorBar(text: LocaleKeys.ErrorLogin.tr());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,10 +58,10 @@ class BackupScreen extends StatelessWidget {
                 try {
                   await context.read<AuthProvider>().silentLogin();
                 } catch (e) {
-                  FlushbarHelper.createError(
-                          message: LocaleKeys.ErrorLogin.tr(),
-                          duration: Duration(seconds: 2))
-                      .show(context);
+                  if (mounted)
+                    _flushBarError
+                      ..dismiss()
+                      ..show(context);
                 }
               },
             );

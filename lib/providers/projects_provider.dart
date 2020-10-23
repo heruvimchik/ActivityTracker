@@ -26,7 +26,6 @@ class ProjectsProvider with ChangeNotifier {
         .toList();
     notifyListeners();
     _daysProvider.setProjectsDays(_projects);
-
     if (initNotification)
       _initLocalNotification();
     else
