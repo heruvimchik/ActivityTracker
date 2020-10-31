@@ -13,21 +13,51 @@ class SettingsProvider with ChangeNotifier {
     'English',
     'Русский',
   ];
+
+  final List<String> _autoBackupList = [
+    LocaleKeys.Never,
+    '1',
+    '3',
+    '7',
+    '14',
+    '30',
+    '90',
+    '180',
+  ];
+
+  final List<Duration> autoExpireList = [
+    Duration(days: 7200),
+    Duration(days: 1),
+    //Duration(seconds: 5),
+    Duration(days: 3),
+    Duration(days: 7),
+    Duration(days: 14),
+    Duration(days: 30),
+    Duration(days: 90),
+    Duration(days: 180),
+  ];
+
   SharedPreferences _prefs;
-  bool _hour24;
-  bool _darkTheme;
-  int _firstDay;
-  int _language;
+  bool _hour24 = true;
+  bool _darkTheme = false;
+  int _firstDay = 0;
+  int _language = 0;
+  int _autoBackup = 0;
+  DateTime expireDate;
+  Future<void> settingsLoaded;
 
   List<String> get dayOfWeek => [..._dayOfWeek];
   List<String> get languageList => [..._languageList];
+  List<String> get autoBackupList => [..._autoBackupList];
+
   bool get hour24 => _hour24;
   bool get darkTheme => _darkTheme;
+  int get autoBackup => _autoBackup;
   int get firstDay => _firstDay;
   int get language => _language;
 
   SettingsProvider() {
-    _getSettings();
+    settingsLoaded = _getSettings();
   }
 
   Future<void> _getSettings() async {
@@ -36,9 +66,17 @@ class SettingsProvider with ChangeNotifier {
     _darkTheme = _prefs.getBool("darkTheme") ?? false;
     _firstDay = _prefs.getInt("firstDay") ?? 0;
     _language = _prefs.getInt("language") ?? 0;
+    _autoBackup = _prefs.getInt("autoBackup") ?? 0;
+    final date = _prefs.getString('expireDate');
+    if (date != null) expireDate = DateTime.tryParse(date);
+
     if (_language < 0 || _language > _languageList.length - 1) _language = 0;
     if (_firstDay < 0 || _firstDay > _dayOfWeek.length - 1) _firstDay = 0;
-    return;
+    if (_autoBackup < 0 || _autoBackup > _autoBackupList.length - 1)
+      _autoBackup = 0;
+    if (_autoBackup > 0 && expireDate == null) setAutoExpire(_autoBackup);
+
+    notifyListeners();
   }
 
   Future<void> _setBool(String key, bool value) async {
@@ -59,6 +97,19 @@ class SettingsProvider with ChangeNotifier {
   Future<void> seTheme(bool value) async {
     _darkTheme = value;
     await _setBool('darkTheme', value);
+  }
+
+  Future<void> setAutoBackup(int value) async {
+    if (value > _autoBackupList.length - 1) value = 0;
+    if (value < 0) value = _autoBackupList.length - 1;
+    _autoBackup = value;
+    await setAutoExpire(value);
+    await _setInt('autoBackup', value);
+  }
+
+  Future<void> setAutoExpire(int value) async {
+    expireDate = DateTime.now().add(autoExpireList[value]);
+    await _prefs.setString('expireDate', expireDate.toIso8601String());
   }
 
   Future<void> setFirstDay(int value) async {

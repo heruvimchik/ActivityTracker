@@ -11,8 +11,27 @@ class ProjectsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ProjectsProvider>(
       builder: (context, projProvider, __) {
-        if (projProvider.projects == null || projProvider.projects.length == 0)
-          return NoRecordsWidget();
+        if (projProvider.projects == null ||
+            projProvider.projects.length == 0) {
+          return Center(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    height: 120,
+                    child: Image.asset(
+                      'assets/jetpack.png',
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  NoRecordsWidget()
+                ],
+              ),
+            ),
+          );
+        }
+
         final projects = projProvider.projects.reversed.toList();
         return ListView.builder(
           itemBuilder: (context, index) => Dismissible(

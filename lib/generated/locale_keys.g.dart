@@ -5,6 +5,7 @@ abstract class  LocaleKeys {
   static const Activities = 'Activities';
   static const Report = 'Report';
   static const Export = 'Export';
+  static const ExportCSV = 'ExportCSV';
   static const Yesterday = 'Yesterday';
   static const Today = 'Today';
   static const Settings = 'Settings';
@@ -75,5 +76,13 @@ abstract class  LocaleKeys {
   static const NoActivity = 'NoActivity';
   static const NoActivityPeriod = 'NoActivityPeriod';
   static const NoRecords = 'NoRecords';
+  static const OfferPro = 'OfferPro';
+  static const Thankyou = 'Thankyou';
+  static const Upgrade = 'Upgrade';
+  static const RestorePurchase = 'RestorePurchase';
+  static const Premium = 'Premium';
+  static const AutoBackup = 'AutoBackup';
+  static const Never = 'Never';
+  static const day = 'day';
 
 }

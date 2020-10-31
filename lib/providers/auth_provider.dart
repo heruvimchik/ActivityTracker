@@ -1,8 +1,7 @@
+import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:http/io_client.dart';
@@ -11,19 +10,29 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:activityTracker/providers/projects_provider.dart';
 
+import 'settings_provider.dart';
+
 class AuthProvider with ChangeNotifier {
   GoogleSignInAccount googleSignInAccount;
   GoogleHttpClient _client;
   ga.DriveApi _drive;
+  Timer _authTimer;
+  final SettingsProvider _settingsProvider;
+
   final auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn =
       GoogleSignIn(scopes: ['https://www.googleapis.com/auth/drive.appdata']);
   Future<ga.FileList> filesLoaded;
 
   bool _isLoadingFiles = false;
+
+  AuthProvider(this._settingsProvider) : assert(_settingsProvider != null);
+
   bool get isLoadingFiles => _isLoadingFiles;
 
   Future<void> logoutFromGoogle() async {
+    if (_authTimer != null) _authTimer.cancel();
+
     await googleSignIn.signOut();
     await auth.signOut();
   }
@@ -55,14 +64,15 @@ class AuthProvider with ChangeNotifier {
       );
       filesLoaded = _drive.files.list(spaces: 'appDataFolder');
     } catch (error) {
-      throw Exception(error.toString());
+      throw error.toString();
     } finally {
       _isLoadingFiles = false;
       notifyListeners();
     }
   }
 
-  void fetchFiles() {
+  void fetchFiles(bool isPro) {
+    if (isPro) launchAutoBackup();
     filesLoaded = listGoogleDriveFiles();
   }
 
@@ -115,6 +125,37 @@ class AuthProvider with ChangeNotifier {
     await _drive.files.delete(gdID);
     filesLoaded = _drive.files.list(spaces: 'appDataFolder');
     notifyListeners();
+  }
+
+  void launchAutoBackup() async {
+    if (_authTimer != null) _authTimer.cancel();
+    await _settingsProvider.settingsLoaded;
+    if (auth.currentUser == null ||
+        _settingsProvider.expireDate == null ||
+        _settingsProvider.autoBackup == 0) return;
+    final timeToExpire =
+        _settingsProvider.expireDate.difference(DateTime.now()).inSeconds;
+    _authTimer = Timer.periodic(Duration(seconds: timeToExpire), (timer) async {
+      _authTimer.cancel();
+      try {
+        await uploadFileToGoogleDrive();
+        await _settingsProvider.setAutoExpire(_settingsProvider.autoBackup);
+      } catch (e) {}
+      setTimerAuto();
+    });
+  }
+
+  void setTimerAuto() {
+    if (_authTimer != null) _authTimer.cancel();
+    if (_settingsProvider.autoBackup == 0 || auth.currentUser == null) return;
+    _authTimer = Timer.periodic(
+        _settingsProvider.autoExpireList[_settingsProvider.autoBackup],
+        (timer) async {
+      try {
+        await uploadFileToGoogleDrive();
+        await _settingsProvider.setAutoExpire(_settingsProvider.autoBackup);
+      } catch (e) {}
+    });
   }
 }
 

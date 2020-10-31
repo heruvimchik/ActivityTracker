@@ -31,15 +31,15 @@ class _RecordsScreenState extends State<RecordsScreen> {
 
   final _tabs = [
     NavigationBarTab(
-      title: LocaleKeys.Records.tr(),
+      title: LocaleKeys.Records,
       icon: Icons.timer,
     ),
     NavigationBarTab(
-      title: LocaleKeys.DailyActivity.tr(),
+      title: LocaleKeys.DailyActivity,
       icon: CupertinoIcons.chart_bar_alt_fill,
     ),
     NavigationBarTab(
-      title: LocaleKeys.Statistic.tr(),
+      title: LocaleKeys.Statistic,
       icon: Icons.show_chart,
     ),
   ];
@@ -243,14 +243,33 @@ class ListRecords extends StatelessWidget {
             ));
           }
         });
-        if (recordsByDays.isEmpty)
+        if (recordsByDays.isEmpty) {
           return Center(
-              child: Text(
-            LocaleKeys.NoRecords.tr(),
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-            maxLines: 2,
-            overflow: TextOverflow.clip,
-          ));
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    height: 120,
+                    child: Image.asset(
+                      'assets/hourglass.png',
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  Text(
+                    LocaleKeys.NoRecords.tr(),
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                    maxLines: 2,
+                    overflow: TextOverflow.clip,
+                  ),
+                  SizedBox(
+                    height: 80,
+                  )
+                ],
+              ),
+            ),
+          );
+        }
 
         return ListView.builder(
           itemBuilder: (_, index) => recordsByDays[index],

@@ -6,6 +6,7 @@ import 'package:activityTracker/generated/locale_keys.g.dart';
 import 'package:activityTracker/providers/settings_provider.dart';
 import 'package:activityTracker/screens/backup/backup_screen.dart';
 import 'package:activityTracker/screens/calendar_screen.dart';
+import 'package:package_info/package_info.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -14,14 +15,27 @@ class AppDrawer extends StatelessWidget {
     return Drawer(
       child: SingleChildScrollView(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(top: 47, bottom: 10, left: 10),
-              child: Text(
-                LocaleKeys.Settings.tr(),
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(right: 10, top: 3),
+                    height: 21,
+                    child: Image.asset(
+                      'assets/settings.png',
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  Text(
+                    LocaleKeys.Settings.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+                  ),
+                ],
               ),
             ),
             const Divider(
@@ -77,14 +91,12 @@ class AppDrawer extends StatelessWidget {
             ),
             Selector<SettingsProvider, int>(
               selector: (_, sett) => sett.language,
-              builder: (context, value, _) {
-                return ChooseSetting(
-                  title: LocaleKeys.Language.tr(),
-                  listValue: settings.languageList[value],
-                  value: value,
-                  onTap: settings.setLanguage,
-                );
-              },
+              builder: (context, value, _) => ChooseSetting(
+                title: LocaleKeys.Language.tr(),
+                listValue: settings.languageList[value],
+                value: value,
+                onTap: settings.setLanguage,
+              ),
             ),
             SizedBox(
               height: 10,
@@ -106,7 +118,35 @@ class AppDrawer extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            _buildInkWell(context, 'Pro Version', (context) => ProScreen()),
+            _buildInkWell(
+                context, LocaleKeys.Premium.tr(), (context) => ProScreen()),
+            SizedBox(
+              height: 17,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, bottom: 5, right: 31),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Version',
+                    style: TextStyle(fontWeight: FontWeight.w200, fontSize: 13),
+                  ),
+                  FutureBuilder(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, AsyncSnapshot<PackageInfo> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        return Text('');
+                      return Text(
+                        '${snapshot.data.version} + ${snapshot.data.buildNumber}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w200, fontSize: 13),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NavigationBar extends StatelessWidget {
   NavigationBar({this.tabIndex, this.onChangeTabIndex, this.tabs});
@@ -72,7 +73,7 @@ class NavigationBar extends StatelessWidget {
                 size: 27,
               ),
               Text(
-                tab.title,
+                tab.title.tr(),
                 maxLines: 1,
                 overflow: TextOverflow.clip,
                 style: TextStyle(

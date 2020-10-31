@@ -142,7 +142,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       onTap: () async {
                         final date = await showDatePicker(
                             context: context,
-                            firstDate: DateTime(2000),
+                            firstDate: DateTime(2020),
                             initialDate: dateNew ?? DateTime.now(),
                             lastDate: endNew == null
                                 ? DateTime.now()

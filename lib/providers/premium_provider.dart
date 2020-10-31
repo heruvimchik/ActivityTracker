@@ -2,57 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import 'auth_provider.dart';
+
 const String revenueKey = 'YVaAsDlsahIBDqnOGVYgMwCDZfAhRzJG';
 
 class PremiumProvider with ChangeNotifier {
-  bool isPro = false;
+  bool _isPro = false;
   Offerings offerings;
-  PurchaserInfo purchaserInfo;
+  PurchaserInfo _purchaserInfo;
+  final AuthProvider _authProvider;
 
-  PremiumProvider() {
+  PremiumProvider(this._authProvider) : assert(_authProvider != null) {
     initPremium();
   }
+  bool get isPro => _isPro;
 
   void _getPro() {
-    if (purchaserInfo != null) {
-      if (purchaserInfo.entitlements.all.isNotEmpty &&
-          purchaserInfo.entitlements.all['Pro'].isActive != null) {
-        isPro = purchaserInfo.entitlements.all['Pro'].isActive;
+    if (_purchaserInfo != null) {
+      if (_purchaserInfo.entitlements.all.isNotEmpty &&
+          _purchaserInfo.entitlements.all['Pro'].isActive != null) {
+        _isPro = _purchaserInfo.entitlements.all['Pro'].isActive;
       } else {
-        isPro = false;
+        _isPro = false;
       }
     }
     notifyListeners();
   }
 
   Future<void> initPremium() async {
-    await Purchases.setDebugLogsEnabled(true);
+    //await Purchases.setDebugLogsEnabled(true);
     await Purchases.setup(revenueKey);
-
     try {
-      purchaserInfo = await Purchases.getPurchaserInfo();
+      _purchaserInfo = await Purchases.getPurchaserInfo();
       offerings = await Purchases.getOfferings();
-    } catch (e) {
-      print(e);
-    }
-    print(purchaserInfo.toString());
+    } catch (e) {}
+    //print(purchaserInfo.toString());
     _getPro();
-    print('#### is user pro? $isPro');
+    if (_isPro) {
+      _authProvider.launchAutoBackup();
+    }
   }
 
   Future<void> refreshPurchases() async {
     try {
-      purchaserInfo = await Purchases.getPurchaserInfo();
+      _purchaserInfo = await Purchases.getPurchaserInfo();
       offerings = await Purchases.getOfferings();
-    } on PlatformException catch (e) {
-      print(e);
     } catch (e) {}
     _getPro();
   }
 
   Future<void> restorePurchase() async {
     try {
-      purchaserInfo = await Purchases.restoreTransactions();
+      _purchaserInfo = await Purchases.restoreTransactions();
     } on PlatformException catch (e) {
       if (int.parse(e.code) != PurchasesErrorCode.purchaseCancelledError.index)
         throw _getErrorMessage(e);
@@ -63,15 +64,13 @@ class PremiumProvider with ChangeNotifier {
   Future<void> makePurchase() async {
     try {
       offerings = await Purchases.getOfferings();
-      purchaserInfo =
+      _purchaserInfo =
           await Purchases.purchasePackage(offerings.current.lifetime);
     } on PlatformException catch (e) {
-      print(e);
       if (int.parse(e.code) != PurchasesErrorCode.purchaseCancelledError.index)
         throw _getErrorMessage(e);
     } catch (e) {}
     _getPro();
-    print('is user pro? $isPro');
   }
 
   String _getErrorMessage(PlatformException error) {
@@ -122,9 +121,6 @@ class PremiumProvider with ChangeNotifier {
         break;
       case PurchasesErrorCode.missingReceiptFileError:
         message = "Missing receipt file error";
-        break;
-      case PurchasesErrorCode.unknownError:
-        message = "Unknown error";
         break;
       case PurchasesErrorCode.invalidSubscriberAttributesError:
         message = "Invalid subscriber attributes error";

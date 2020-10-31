@@ -57,7 +57,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
         iconTheme: IconThemeData(
             color: Theme.of(context).appBarTheme.actionsIconTheme.color),
         backgroundColor: Theme.of(context).backgroundColor,
-        title: Text(LocaleKeys.Calendar.tr()),
+        title: Text(
+          LocaleKeys.Calendar.tr(),
+          style: TextStyle(fontSize: 18),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.event),

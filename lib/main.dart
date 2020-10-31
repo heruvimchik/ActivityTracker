@@ -1,4 +1,5 @@
 import 'package:activityTracker/providers/premium_provider.dart';
+import 'package:activityTracker/screens/pro_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,86 +43,60 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  Future<void> _initProviders(BuildContext context) async {
-    await Provider.of<ProjectsProvider>(context, listen: false).loadDb;
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => SettingsProvider(),
-            lazy: false,
-          ),
-          ChangeNotifierProvider(
-            create: (_) => DaysProvider(),
-            lazy: false,
-          ),
-          ChangeNotifierProvider(
-            create: (context) {
-              final daysProv =
-                  Provider.of<DaysProvider>(context, listen: false);
-              return ProjectsProvider(daysProv);
-            },
-            lazy: false,
-          ),
-          ChangeNotifierProvider(
-            create: (_) => PremiumProvider(),
-            lazy: false,
-          ),
-          ChangeNotifierProvider(
-            create: (_) => AuthProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => ScrollProvider(),
-          ),
-        ],
-        builder: (context, child) =>
-            Selector<SettingsProvider, Tuple2<bool, int>>(
-              child: MyHomePage(),
-              selector: (_, set) =>
-                  Tuple2(set.darkTheme, set.language), //  set.darkTheme,
-              builder: (context, data, child) {
-                context.locale = context.supportedLocales[data.item2 ?? 0];
-                return MaterialApp(
-                  localizationsDelegates: context.localizationDelegates,
-                  supportedLocales: context.supportedLocales,
-                  locale: context.supportedLocales[data.item2 ?? 0],
-                  title: 'Activity Tracker',
-                  theme: data.item1 ?? false ? darkTheme : lightTheme,
-                  home: child,
-                );
-              },
-            )
-        // builder: (context, _) => FutureBuilder(
-        //   future: _initProviders(context),
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState == ConnectionState.waiting)
-        //       return MaterialApp(
-        //           home: Scaffold(
-        //               body: Center(
-        //         child: Text(LocaleKeys.Loading.tr()),
-        //       )));
-        //     return Selector<SettingsProvider, Tuple2<bool, int>>(
-        //       child: MyHomePage(),
-        //       selector: (_, set) =>
-        //           Tuple2(set.darkTheme, set.language), //  set.darkTheme,
-        //       builder: (context, data, child) {
-        //         context.locale = context.supportedLocales[data.item2 ?? 0];
-        //         return MaterialApp(
-        //           localizationsDelegates: context.localizationDelegates,
-        //           supportedLocales: context.supportedLocales,
-        //           locale: context.supportedLocales[data.item2 ?? 0],
-        //           title: 'Activity Tracker',
-        //           theme: data.item1 ?? false ? darkTheme : lightTheme,
-        //           home: child,
-        //         );
-        //       },
-        //     );
-        //   },
-        // ),
-        );
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => SettingsProvider(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => DaysProvider(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (context) {
+            final daysProv = Provider.of<DaysProvider>(context, listen: false);
+            return ProjectsProvider(daysProv);
+          },
+          lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (context) {
+            final settingsProvider =
+                Provider.of<SettingsProvider>(context, listen: false);
+            return AuthProvider(settingsProvider);
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (context) {
+            final authProv = Provider.of<AuthProvider>(context, listen: false);
+            return PremiumProvider(authProv);
+          },
+          lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ScrollProvider(),
+        ),
+      ],
+      builder: (context, _) => Selector<SettingsProvider, Tuple2<bool, int>>(
+        child: MyHomePage(),
+        selector: (_, set) =>
+            Tuple2(set.darkTheme, set.language), //  set.darkTheme,
+        builder: (context, data, child) {
+          context.locale = context.supportedLocales[data.item2 ?? 0];
+          return MaterialApp(
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.supportedLocales[data.item2 ?? 0],
+            title: 'Activity Tracker',
+            theme: data.item1 ?? false ? darkTheme : lightTheme,
+            home: child,
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -133,31 +108,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  final _tabs = [
+    NavigationBarTab(
+      title: LocaleKeys.Timeline,
+      icon: Icons.timeline,
+    ),
+    NavigationBarTab(
+      title: LocaleKeys.Activities,
+      icon: Icons.update,
+    ),
+    NavigationBarTab(
+      title: LocaleKeys.Report,
+      icon: CupertinoIcons.chart_pie_fill,
+    ),
+    NavigationBarTab(
+      title: LocaleKeys.Export,
+      icon: Icons.cloud_upload,
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final _tabs = [
-      NavigationBarTab(
-        title: LocaleKeys.Timeline.tr(),
-        icon: Icons.timeline,
-      ),
-      NavigationBarTab(
-        title: LocaleKeys.Activities.tr(),
-        icon: Icons.update, // Icons.queue,
-      ),
-      NavigationBarTab(
-        title: LocaleKeys.Report.tr(),
-        icon: CupertinoIcons.chart_pie_fill,
-      ),
-      NavigationBarTab(
-        title: LocaleKeys.Export.tr(),
-        icon: Icons.cloud_upload,
-      ),
-    ];
     return Scaffold(
       // extendBody: true,
       drawer: AppDrawer(),
@@ -167,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Theme.of(context).appBarTheme.actionsIconTheme.color),
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text(
-          _tabs[_selectedIndex].title,
+          _tabs[_selectedIndex].title.tr(),
           style: TextStyle(fontSize: 14),
         ),
         actions: <Widget>[
@@ -177,15 +148,31 @@ class _MyHomePageState extends State<MyHomePage> {
       body: <Widget>[
         Consumer<DaysProvider>(builder: (_, daysProvider, __) {
           if (daysProvider.days == null || daysProvider.days.length == 0) {
-            return daysProvider.dateRange == null
-                ? NoRecordsWidget()
-                : Center(
-                    child: Text(
-                    LocaleKeys.NoActivityPeriod.tr(),
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                    maxLines: 2,
-                    overflow: TextOverflow.clip,
-                  ));
+            return Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      height: 120,
+                      child: Image.asset(
+                        'assets/timeline.png',
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    daysProvider.dateRange == null
+                        ? NoRecordsWidget()
+                        : Text(
+                            LocaleKeys.NoActivityPeriod.tr(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 16),
+                            maxLines: 2,
+                            overflow: TextOverflow.clip,
+                          )
+                  ],
+                ),
+              ),
+            );
           }
           return ScrollablePositionedList.builder(
             itemBuilder: (ctx, index) => DayGrouping(daysProvider.days[index]),
@@ -204,15 +191,8 @@ class _MyHomePageState extends State<MyHomePage> {
           color: Colors.white,
           size: 35,
         ),
-        onPressed: () => showModalBottomSheet(
-            shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(25.0))),
-            context: context,
-            isScrollControlled: true,
-            builder: (context) => AddProjectScreen(
-                project: null, title: LocaleKeys.BeginActivity.tr())),
-        backgroundColor: Colors.indigo.withOpacity(0.8),
+        onPressed: () => checkPremium(context),
+        //backgroundColor: Colors.indigo.withOpacity(0.8),
       ),
       bottomNavigationBar: NavigationBar(
         tabIndex: _selectedIndex,
@@ -222,5 +202,33 @@ class _MyHomePageState extends State<MyHomePage> {
         tabs: _tabs,
       ),
     );
+  }
+
+  void checkPremium(BuildContext context) {
+    final projProvider = context.read<ProjectsProvider>();
+    final isPro = context.read<PremiumProvider>().isPro;
+    bool premium = true;
+
+    if (projProvider.isLoaded) {
+      if (projProvider.projects.length >= 10) {
+        premium = isPro;
+      }
+      if (premium) {
+        showModalBottomSheet(
+            shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(20.0))),
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => AddProjectScreen(
+                project: null, title: LocaleKeys.BeginActivity.tr()));
+      } else {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProScreen(),
+            ));
+      }
+    }
   }
 }

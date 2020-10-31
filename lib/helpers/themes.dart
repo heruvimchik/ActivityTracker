@@ -8,6 +8,8 @@ final ThemeData lightTheme = ThemeData(
   backgroundColor: Colors.white,
   dividerColor: Colors.transparent,
   accentColor: Colors.indigoAccent,
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Colors.indigo.withOpacity(0.8)),
   appBarTheme: AppBarTheme(
       actionsIconTheme: IconThemeData(color: Colors.indigo),
       iconTheme: IconThemeData(color: Colors.white),
@@ -23,6 +25,8 @@ final ThemeData darkTheme = ThemeData(
   fontFamily: 'Mulish',
   bottomNavigationBarTheme:
       BottomNavigationBarThemeData(selectedItemColor: Colors.white),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Colors.indigo.withOpacity(0.8)),
   dividerColor: Colors.transparent,
   accentColor: Colors.indigoAccent,
   backgroundColor: Colors.indigo,

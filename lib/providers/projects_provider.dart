@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:activityTracker/providers/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:activityTracker/helpers/timer_handler.dart';
@@ -9,12 +10,14 @@ import 'package:activityTracker/models/project.dart';
 
 class ProjectsProvider with ChangeNotifier {
   final DaysProvider _daysProvider;
-  Future<void> loadDb;
   List<Project> _projects;
+  bool _isLoaded = false;
+
+  bool get isLoaded => _isLoaded;
   List<Project> get projects => [..._projects];
 
-  ProjectsProvider(this._daysProvider) {
-    loadDb = fetchProjects();
+  ProjectsProvider(this._daysProvider) : assert(_daysProvider != null) {
+    fetchProjects();
   }
 
   Future<void> fetchProjects({bool initNotification = true}) async {
@@ -24,6 +27,7 @@ class ProjectsProvider with ChangeNotifier {
           (item) => Project.fromDB(item),
         )
         .toList();
+    _isLoaded = true;
     notifyListeners();
     _daysProvider.setProjectsDays(_projects);
     if (initNotification)

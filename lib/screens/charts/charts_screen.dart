@@ -57,11 +57,25 @@ class _ChartsScreenState extends State<ChartsScreen> {
     projectDuration = projectDuration.reversed.toList();
     if (projectDuration.isEmpty) {
       return Center(
-          child: Text(
-        LocaleKeys.NoActivityPeriod.tr(),
-        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-        maxLines: 2,
-        overflow: TextOverflow.clip,
+          child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(bottom: 10),
+              height: 120,
+              child: Image.asset(
+                'assets/report.png',
+                fit: BoxFit.fill,
+              ),
+            ),
+            Text(
+              LocaleKeys.NoActivityPeriod.tr(),
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+              maxLines: 2,
+              overflow: TextOverflow.clip,
+            ),
+          ],
+        ),
       ));
     }
 

@@ -1,7 +1,8 @@
 import 'package:activityTracker/helpers/const.dart';
+import 'package:activityTracker/providers/premium_provider.dart';
+import 'package:activityTracker/screens/pro_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:activityTracker/generated/locale_keys.g.dart';
@@ -26,16 +27,15 @@ class _GoogleDriveScreenState extends State<GoogleDriveScreen> {
   @override
   Widget build(BuildContext context) {
     final authGoogle = Provider.of<AuthProvider>(context, listen: false);
-    final hour24 = context.select((SettingsProvider value) => value.hour24);
-    final hourFormat = hour24 ? date24h : date12h;
+    final hourFormat = context.select((SettingsProvider value) => value.hour24)
+        ? date24h
+        : date12h;
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
     final isLoadingFiles =
         context.select((AuthProvider value) => value.isLoadingFiles);
-
+    final isPro = context.watch<PremiumProvider>().isPro;
     return Column(
       children: [
-        SizedBox(
-          height: 10,
-        ),
         RaisedButton(
             textColor: Colors.white,
             color: Colors.indigo,
@@ -78,68 +78,43 @@ class _GoogleDriveScreenState extends State<GoogleDriveScreen> {
                 ),
               ],
             )),
-        SizedBox(
-          height: 15,
-        ),
-        InkWell(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LocaleKeys.Restore.tr(),
-                      style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                    ),
-                    Selector<AuthProvider, Future<ga.FileList>>(
-                      selector: (_, auth) => auth.filesLoaded,
-                      builder: (context, futureFileList, _) =>
-                          FutureBuilder<ga.FileList>(
-                        future: futureFileList,
-                        builder:
-                            (context, AsyncSnapshot<ga.FileList> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting)
-                            return Text(LocaleKeys.Loading.tr(),
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w200,
-                                    fontFamily: 'Roboto'));
+        ListTile(
+          dense: true,
+          title: Text(
+            LocaleKeys.Restore.tr(),
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+          ),
+          subtitle: Selector<AuthProvider, Future<ga.FileList>>(
+            selector: (_, auth) => auth.filesLoaded,
+            builder: (context, futureFileList, _) => FutureBuilder<ga.FileList>(
+              future: futureFileList,
+              builder: (context, AsyncSnapshot<ga.FileList> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting)
+                  return Text(LocaleKeys.Loading.tr(),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w200,
+                      ));
 
-                          if (snapshot.data == null ||
-                              snapshot.data.files.length == 0) return Text('');
-                          return Text(
-                            LocaleKeys.LastBackup.tr() +
-                                ': ' +
-                                hourFormat.format(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        int.tryParse(snapshot
-                                                    .data.files.first.name ??
-                                                '') ??
-                                            0)),
-                            style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w200,
-                                fontFamily: 'Roboto'),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.all(14),
-                  child: Icon(
-                    Icons.keyboard_arrow_right,
-                    size: 18,
-                  ),
-                )
-              ],
+                if (snapshot.data == null || snapshot.data.files.length == 0)
+                  return Text('');
+                return Text(
+                  LocaleKeys.LastBackup.tr() +
+                      ': ' +
+                      hourFormat.format(DateTime.fromMillisecondsSinceEpoch(
+                          int.tryParse(snapshot.data.files.first.name ?? '') ??
+                              0)),
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w300,
+                      fontFamily: 'Roboto'),
+                );
+              },
             ),
+          ),
+          trailing: Icon(
+            Icons.keyboard_arrow_right,
+            size: 18,
           ),
           onTap: isLoadingFiles
               ? null
@@ -149,41 +124,97 @@ class _GoogleDriveScreenState extends State<GoogleDriveScreen> {
                   ));
                 },
         ),
-        SizedBox(
-          height: 15,
-        ),
-        InkWell(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LocaleKeys.Account.tr(),
-                      style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                    ),
-                    Text(
-                      FirebaseAuth.instance.currentUser?.email ?? '',
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w200,
-                          fontFamily: 'Roboto'),
-                    ),
-                  ],
-                ),
-                Text(
-                  LocaleKeys.Logout.tr(),
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                ),
-              ],
+        Selector<SettingsProvider, int>(
+          selector: (_, sett) => sett.autoBackup,
+          builder: (context, autoBackup, _) => ListTile(
+            dense: true,
+            title: Text(
+              LocaleKeys.AutoBackup.tr(),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
             ),
+            subtitle: Text(
+              autoBackup == 0
+                  ? settings.autoBackupList[autoBackup].tr()
+                  : LocaleKeys.day.plural(
+                      int.tryParse(settings.autoBackupList[autoBackup])),
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Roboto'),
+            ),
+            trailing: isPro
+                ? Icon(
+                    Icons.keyboard_arrow_right,
+                    size: 18,
+                  )
+                : Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        color: Colors.grey[300]),
+                    child: Text(
+                      LocaleKeys.Premium.tr(),
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+            onTap: () => isPro
+                ? showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20.0))),
+                    builder: (context) => SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: ListView(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          children: List.generate(
+                            settings.autoBackupList.length,
+                            (index) => RadioListTile<int>(
+                              activeColor: Colors.indigo,
+                              title: Text(index == 0
+                                  ? settings.autoBackupList[index].tr()
+                                  : LocaleKeys.day.plural(int.tryParse(
+                                      settings.autoBackupList[index]))),
+                              value: index,
+                              groupValue: autoBackup,
+                              dense: true,
+                              onChanged: (value) {
+                                settings.setAutoBackup(value);
+                                authGoogle.setTimerAuto();
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                        )),
+                  )
+                : Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProScreen(),
+                    )),
           ),
-          onTap: () => authGoogle.logoutFromGoogle(),
         ),
+        ListTile(
+            dense: true,
+            title: Text(
+              LocaleKeys.Account.tr(),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            ),
+            subtitle: Text(
+              FirebaseAuth.instance.currentUser?.email ?? '',
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w300,
+                  fontFamily: 'Roboto'),
+            ),
+            trailing: Text(
+              LocaleKeys.Logout.tr(),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            ),
+            onTap: () => authGoogle.logoutFromGoogle()),
       ],
     );
   }

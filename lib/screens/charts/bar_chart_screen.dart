@@ -43,7 +43,7 @@ class BarChartScreen extends StatelessWidget {
             rec.endTime.difference(rec.startTime).inSeconds.toDouble() / 3600);
     double maxy = 0;
     if (MediaQuery.of(context).orientation == Orientation.portrait)
-      maxy = 60;
+      maxy = 80;
     else
       maxy = 130;
     Color col = Theme.of(context).appBarTheme.textTheme.headline6.color;
@@ -63,7 +63,7 @@ class BarChartScreen extends StatelessWidget {
     }
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Flexible(
@@ -76,7 +76,7 @@ class BarChartScreen extends StatelessWidget {
                 enabled: false,
                 touchTooltipData: BarTouchTooltipData(
                   tooltipBgColor: Colors.transparent,
-                  tooltipBottomMargin: 5,
+                  tooltipBottomMargin: 1,
                   getTooltipItem: (
                     BarChartGroupData group,
                     int groupIndex,
@@ -84,7 +84,7 @@ class BarChartScreen extends StatelessWidget {
                     int rodIndex,
                   ) {
                     return BarTooltipItem(
-                      rod.y.toStringAsFixed(1) + '%',
+                      rod.y == 0 ? '' : rod.y.toStringAsFixed(1) + '%',
                       TextStyle(
                         fontSize: 13,
                         color: col,
@@ -98,7 +98,7 @@ class BarChartScreen extends StatelessWidget {
                 bottomTitles: SideTitles(
                   showTitles: true,
                   getTextStyles: (value) => TextStyle(color: col, fontSize: 14),
-                  margin: 30,
+                  margin: 10,
                   getTitles: (double value) {
                     final day = value.toInt();
                     return daysOfWeek[day + 2 - firstDay].tr();

@@ -19,6 +19,7 @@ class CodegenLoader extends AssetLoader{
   "Activities": "Activities",
   "Report": "Report",
   "Export": "Export",
+  "ExportCSV": "Export data to CSV",
   "Yesterday": "Yesterday",
   "Today": "Today",
   "Settings": "Settings",
@@ -88,13 +89,28 @@ class CodegenLoader extends AssetLoader{
   "All": "All",
   "NoActivity": "Start new activity, by pressing",
   "NoActivityPeriod": "You have no records for selected period",
-  "NoRecords": "Start activity or add new record"
+  "NoRecords": "Start activity or add new record",
+  "OfferPro": "Get lifetime access to the following features:\n\n- unlimited number of tracked activities;\n- more colors;\n- automatic data backup;",
+  "Thankyou": "Thank you for purchasing the premium version!",
+  "Upgrade": "Upgrade for",
+  "RestorePurchase": "Restore purchase",
+  "Premium": "Premium",
+  "AutoBackup": "AutoBackup",
+  "Never": "Never",
+  "day": {
+    "one": "{} day",
+    "two": "{} days",
+    "few": "{} days",
+    "many": "{} days",
+    "other": "{} days"
+  }
 };
 static const Map<String,dynamic> ru = {
   "Timeline": "Хронология",
   "Activities": "Активности",
   "Report": "Отчёт",
   "Export": "Экспорт",
+  "ExportCSV": "Экспорт данных в CSV файл",
   "Yesterday": "Вчера",
   "Today": "Сегодня",
   "Settings": "Настройки",
@@ -164,7 +180,21 @@ static const Map<String,dynamic> ru = {
   "All": "Все",
   "NoActivity": "Начните новую активность, нажав",
   "NoActivityPeriod": "У вас нет записей за выбранный период",
-  "NoRecords": "Начните активность или добавьте новую запись"
+  "NoRecords": "Начните активность или добавьте новую запись",
+  "OfferPro": "Получите пожизненный доступ к следующим возможностям:\n\n- неограниченное количество отслеживаемых активностей;\n- большее количество цветов;\n- автоматическое резервное копирование данных;",
+  "Thankyou": "Спасибо за приобретение премиум версии!",
+  "Upgrade": "Приобрести за",
+  "RestorePurchase": "Восстановить покупку",
+  "Premium": "Премиум",
+  "AutoBackup": "Авто бэкап",
+  "Never": "Никогда",
+  "day": {
+    "one": "{} день",
+    "two": "{} дня",
+    "few": "{} дня",
+    "many": "{} дней",
+    "other": "{} дней"
+  }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": en, "ru": ru};
 }

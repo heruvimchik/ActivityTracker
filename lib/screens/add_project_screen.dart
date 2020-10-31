@@ -1,3 +1,4 @@
+import 'package:activityTracker/providers/premium_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +31,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isPro = context.watch<PremiumProvider>().isPro;
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Padding(
@@ -66,7 +68,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
               child: MaterialColorPicker(
                 physics: NeverScrollableScrollPhysics(),
                 onMainColorChange: (value) => _colour = value,
-                allowShades: false,
+                allowShades: isPro,
                 spacing: 5,
                 circleSize: 30.0,
                 selectedColor: _colour,
@@ -103,7 +105,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
               ),
             ),
             Container(
-              height: MediaQuery.of(context).size.height * 0.03,
+              height: MediaQuery.of(context).size.height * 0.01,
             )
           ],
         ),
