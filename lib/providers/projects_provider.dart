@@ -1,5 +1,6 @@
 import 'dart:ui';
-import 'package:activityTracker/providers/settings_provider.dart';
+import 'package:activityTracker/generated/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:activityTracker/helpers/timer_handler.dart';
@@ -141,7 +142,7 @@ class ProjectsProvider with ChangeNotifier {
     await flutterLocalNotificationsPlugin.show(
         number,
         project.description + (start ? '' : '  ${run.formatDuration()}'),
-        start ? 'Stop' : 'Start',
+        start ? LocaleKeys.StopTimer.tr() : LocaleKeys.StartTimer.tr(),
         platformChannelSpecifics,
         payload: (start ? 'Start ' : 'Stop ') + project.projectID);
   }
@@ -294,13 +295,13 @@ class ProjectsProvider with ChangeNotifier {
   }
 
   Future<void> deleteProject(Project project) async {
-    _projects.removeWhere((prj) => prj.projectID == project.projectID);
-    notifyListeners();
-    _daysProvider.deleteProjectDays(project.projectID);
     await DBHelper.db.delete(project);
     final id = project.projectID.replaceAll('-', '');
     final number = int.parse(id.substring(0, 8), radix: 16) & 0x7fffffff;
     flutterLocalNotificationsPlugin.cancel(number);
+    _daysProvider.deleteProjectDays(project.projectID);
+    _projects.removeWhere((prj) => prj.projectID == project.projectID);
+    notifyListeners();
   }
 
   Future<void> deleteRecord(String projectID, String recordID) async {

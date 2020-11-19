@@ -8,3 +8,4 @@ google-services.json
 /key.properties
 GeneratedPluginRegistrant.java
 *.jks
+/app/local.properties

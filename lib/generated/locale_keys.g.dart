@@ -84,5 +84,6 @@ abstract class  LocaleKeys {
   static const AutoBackup = 'AutoBackup';
   static const Never = 'Never';
   static const day = 'day';
+  static const Version = 'Version';
 
 }

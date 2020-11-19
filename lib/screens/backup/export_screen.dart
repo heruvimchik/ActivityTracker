@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:activityTracker/widgets/line.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

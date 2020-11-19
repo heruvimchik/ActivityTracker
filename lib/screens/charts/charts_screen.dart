@@ -8,7 +8,6 @@ import 'package:activityTracker/generated/locale_keys.g.dart';
 import 'package:activityTracker/models/project.dart';
 import 'package:activityTracker/providers/days_provider.dart';
 import 'package:activityTracker/providers/projects_provider.dart';
-import 'package:activityTracker/widgets/line.dart';
 
 class ChartsScreen extends StatefulWidget {
   const ChartsScreen();

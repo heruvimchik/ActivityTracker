@@ -25,7 +25,7 @@ class CodegenLoader extends AssetLoader{
   "Settings": "Settings",
   "HourFMT": "24-hour format",
   "DarkTheme": "Dark theme",
-  "BeginWeek": "Begin of the week",
+  "BeginWeek": "Beginning of the week",
   "Language": "Language",
   "Backup": "Backup",
   "NewRecord": "New record",
@@ -89,7 +89,7 @@ class CodegenLoader extends AssetLoader{
   "All": "All",
   "NoActivity": "Start new activity, by pressing",
   "NoActivityPeriod": "You have no records for selected period",
-  "NoRecords": "Start activity or add new record",
+  "NoRecords": "Start activity or add a new record",
   "OfferPro": "Get lifetime access to the following features:\n\n- unlimited number of tracked activities;\n- more colors;\n- automatic data backup;",
   "Thankyou": "Thank you for purchasing the premium version!",
   "Upgrade": "Upgrade for",
@@ -103,7 +103,8 @@ class CodegenLoader extends AssetLoader{
     "few": "{} days",
     "many": "{} days",
     "other": "{} days"
-  }
+  },
+  "Version": "Version"
 };
 static const Map<String,dynamic> ru = {
   "Timeline": "Хронология",
@@ -194,7 +195,8 @@ static const Map<String,dynamic> ru = {
     "few": "{} дня",
     "many": "{} дней",
     "other": "{} дней"
-  }
+  },
+  "Version": "Версия"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": en, "ru": ru};
 }

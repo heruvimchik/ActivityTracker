@@ -129,8 +129,11 @@ class AppDrawer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Version',
-                    style: TextStyle(fontWeight: FontWeight.w200, fontSize: 13),
+                    LocaleKeys.Version.tr(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w200,
+                        fontSize: 13,
+                        fontFamily: "Roboto"),
                   ),
                   FutureBuilder(
                     future: PackageInfo.fromPlatform(),
@@ -140,7 +143,9 @@ class AppDrawer extends StatelessWidget {
                       return Text(
                         '${snapshot.data.version} + ${snapshot.data.buildNumber}',
                         style: TextStyle(
-                            fontWeight: FontWeight.w200, fontSize: 13),
+                            fontWeight: FontWeight.w200,
+                            fontSize: 13,
+                            fontFamily: "Roboto"),
                       );
                     },
                   ),

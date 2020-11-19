@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  fontFamily: 'Mulish',
+  fontFamily: 'SourceSansPro',
   bottomNavigationBarTheme:
       BottomNavigationBarThemeData(selectedItemColor: Colors.indigo),
   backgroundColor: Colors.white,
@@ -22,7 +22,7 @@ final ThemeData lightTheme = ThemeData(
 
 final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
-  fontFamily: 'Mulish',
+  fontFamily: 'SourceSansPro',
   bottomNavigationBarTheme:
       BottomNavigationBarThemeData(selectedItemColor: Colors.white),
   floatingActionButtonTheme: FloatingActionButtonThemeData(

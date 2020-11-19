@@ -115,9 +115,7 @@ class AuthProvider with ChangeNotifier {
     }, onDone: () async {
       await saveFile.writeAsBytes(dataStore);
       projects.fetchProjects(initNotification: false);
-    }, onError: (error) {
-      print("Some Error");
-    });
+    }, onError: (error) {});
   }
 
   Future<void> deleteGoogleDriveFile({String gdID}) async {

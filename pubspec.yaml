@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+4
+version: 1.0.0+7
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -39,17 +39,16 @@ dependencies:
   scrollable_positioned_list: ^0.1.8
   flutter_datetime_picker: ^1.4.0
   fl_chart: ^0.12.0
-  flutter_local_notifications: ^2.0.0
+  flutter_local_notifications: ^3.0.1+4
   path_provider: ^1.6.22
   shared_preferences: ^0.5.12+2
   easy_localization: ^2.3.3
   tuple: ^1.0.3
   flushbar: ^1.10.4
   table_calendar: ^2.3.0
-  flutter_swiper: ^1.1.6
   charts_flutter: ^0.9.0
   share: ^0.6.5+4
-  csv: ^4.0.3
+  csv: ^4.1.0
   purchases_flutter: ^1.4.1
   package_info: ^0.4.3
 
@@ -92,24 +91,20 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Mulish
+    - family: SourceSansPro
       fonts:
-         - asset: assets/fonts/Mulish-Black.ttf
-         - asset: assets/fonts/Mulish-BlackItalic.ttf
-         - asset: assets/fonts/Mulish-Bold.ttf
-         - asset: assets/fonts/Mulish-BoldItalic.ttf
-         - asset: assets/fonts/Mulish-ExtraBold.ttf
-         - asset: assets/fonts/Mulish-ExtraBoldItalic.ttf
-         - asset: assets/fonts/Mulish-ExtraLight.ttf
-         - asset: assets/fonts/Mulish-ExtraLightItalic.ttf
-         - asset: assets/fonts/Mulish-Italic.ttf
-         - asset: assets/fonts/Mulish-Light.ttf
-         - asset: assets/fonts/Mulish-LightItalic.ttf
-         - asset: assets/fonts/Mulish-Medium.ttf
-         - asset: assets/fonts/Mulish-MediumItalic.ttf
-         - asset: assets/fonts/Mulish-Regular.ttf
-         - asset: assets/fonts/Mulish-SemiBold.ttf
-         - asset: assets/fonts/Mulish-SemiBoldItalic.ttf
+         - asset: assets/fonts/SourceSansPro-Black.ttf
+         - asset: assets/fonts/SourceSansPro-BlackItalic.ttf
+         - asset: assets/fonts/SourceSansPro-Bold.ttf
+         - asset: assets/fonts/SourceSansPro-BoldItalic.ttf
+         - asset: assets/fonts/SourceSansPro-ExtraLight.ttf
+         - asset: assets/fonts/SourceSansPro-ExtraLightItalic.ttf
+         - asset: assets/fonts/SourceSansPro-Italic.ttf
+         - asset: assets/fonts/SourceSansPro-Light.ttf
+         - asset: assets/fonts/SourceSansPro-LightItalic.ttf
+         - asset: assets/fonts/SourceSansPro-Regular.ttf
+         - asset: assets/fonts/SourceSansPro-SemiBold.ttf
+         - asset: assets/fonts/SourceSansPro-SemiBoldItalic.ttf
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,

@@ -147,7 +147,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: <Widget>[
         Consumer<DaysProvider>(builder: (_, daysProvider, __) {
-          if (daysProvider.days == null || daysProvider.days.length == 0) {
+          final loaded = context.read<ProjectsProvider>().isLoaded;
+          if (daysProvider.days == null ||
+              daysProvider.days.length == 0 && loaded) {
             return Center(
               child: SingleChildScrollView(
                 child: Column(
