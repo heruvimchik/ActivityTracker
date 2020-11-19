@@ -43,7 +43,7 @@ class BarChartScreen extends StatelessWidget {
             rec.endTime.difference(rec.startTime).inSeconds.toDouble() / 3600);
     double maxy = 0;
     if (MediaQuery.of(context).orientation == Orientation.portrait)
-      maxy = 80;
+      maxy = 83;
     else
       maxy = 130;
     Color col = Theme.of(context).appBarTheme.textTheme.headline6.color;

@@ -41,6 +41,7 @@ class DaysProvider with ChangeNotifier {
         record.startTime.month,
         record.startTime.day,
       )));
+      _initialDays.sort((a, b) => b.date.compareTo(a.date));
     }
     _initialDays
         .firstWhere((Days day) =>
