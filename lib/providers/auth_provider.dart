@@ -106,7 +106,7 @@ class AuthProvider with ChangeNotifier {
     Directory dbPath = await getApplicationDocumentsDirectory();
     final filepath = path.join(dbPath.path, 'projects.db');
     ga.Media file = await _drive.files
-        .get(gdID, downloadOptions: ga.DownloadOptions.FullMedia);
+        .get(gdID, downloadOptions: ga.DownloadOptions.fullMedia);
 
     final saveFile = File(filepath);
     List<int> dataStore = [];

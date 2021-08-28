@@ -36,10 +36,11 @@ class _GoogleDriveScreenState extends State<GoogleDriveScreen> {
     final isPro = context.watch<PremiumProvider>().isPro;
     return Column(
       children: [
-        RaisedButton(
-            textColor: Colors.white,
-            color: Colors.indigo,
-            shape: StadiumBorder(),
+        ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: StadiumBorder(),
+              primary: Colors.indigo,
+            ),
             onPressed: isLoadingFiles
                 ? null
                 : () async {
@@ -73,7 +74,7 @@ class _GoogleDriveScreenState extends State<GoogleDriveScreen> {
                       left: 15, top: 6, bottom: 6, right: 15),
                   child: Text(
                     LocaleKeys.BackupButton.tr(),
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(fontSize: 15, color: Colors.white),
                   ),
                 ),
               ],

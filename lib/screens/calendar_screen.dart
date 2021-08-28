@@ -18,35 +18,32 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   Map<DateTime, List> _events = {};
+  PageController _pageController;
   List _selectedEvents = [];
-  CalendarController _calendarController;
-  DateTime date;
+  DateTime _focusedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now();
+  DateTime first;
+  DateTime last;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
 
   @override
   void initState() {
-    final _selectedDay = DateTime.now();
-    final first =
-        DateTime(_selectedDay.year, _selectedDay.month - 1, _selectedDay.day);
-    final last =
-        DateTime(_selectedDay.year, _selectedDay.month + 1, _selectedDay.day);
+    first = DateTime(_focusedDay.year, _focusedDay.month - 1, _focusedDay.day);
+    last = DateTime(_focusedDay.year, _focusedDay.month + 1, _focusedDay.day);
     final days = Provider.of<DaysProvider>(context, listen: false)
         .initialDays
         .where((element) {
       return element.date.isAfter(first) && element.date.isBefore(last);
     });
     _events = {for (Days day in days) day.date: day.entries};
-    _selectedEvents = _events[DateTime(
-            _selectedDay.year, _selectedDay.month, _selectedDay.day)] ??
+    _selectedEvents = _events[
+            DateTime(_focusedDay.year, _focusedDay.month, _focusedDay.day)] ??
         [];
-    date = _selectedDay;
-    _calendarController = CalendarController();
     super.initState();
   }
 
-  @override
-  void dispose() {
-    _calendarController.dispose();
-    super.dispose();
+  int getHashCode(DateTime key) {
+    return key.day * 1000000 + key.month * 10000 + key.year;
   }
 
   @override
@@ -64,10 +61,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.event),
-            onPressed: () => _calendarController.setSelectedDay(
-              DateTime.now(),
-              runCallback: true,
-            ),
+            onPressed: () {
+              _pageController.jumpToPage(_pageController.initialPage);
+              setState(() {
+                _focusedDay = DateTime.now();
+                _selectedDay = _focusedDay;
+                _selectedEvents = _getEventsForDay(_focusedDay);
+              });
+            },
           ),
         ],
       ),
@@ -84,28 +85,35 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  void _onVisibleDaysChanged(
-      DateTime first, DateTime last, CalendarFormat format) {
+  void _onVisibleDaysChanged(focusedDay) {
+    _focusedDay = focusedDay;
+    final first = DateTime(_focusedDay.year, _focusedDay.month, 0);
+    final last = DateTime(_focusedDay.year, _focusedDay.month, 32);
     final days = Provider.of<DaysProvider>(context, listen: false)
         .initialDays
         .where((element) {
-      return element.date.isAfter(first.subtract(Duration(days: 1))) &&
-          element.date.isBefore(last.add(Duration(days: 1)));
+      return element.date.isAfter(first) && element.date.isBefore(last);
     });
     _events = {for (Days day in days) day.date: day.entries};
     setState(() {});
   }
 
+  List _getEventsForDay(DateTime day) {
+    return _events[DateTime(day.year, day.month, day.day)] ?? [];
+  }
+
   Widget _buildTableCalendarWithBuilders() {
     final firstDay = context.select((SettingsProvider value) => value.firstDay);
     return TableCalendar(
-      onVisibleDaysChanged: _onVisibleDaysChanged,
+      onCalendarCreated: (pageController) => _pageController = pageController,
+      firstDay: DateTime.utc(2010, 10, 16),
+      lastDay: DateTime.utc(2100, 10, 16),
+      focusedDay: _focusedDay,
+      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
       rowHeight: 50,
       locale: context.locale.toString(),
-      calendarController: _calendarController,
-      events: _events,
-      initialCalendarFormat: CalendarFormat.month,
-      formatAnimation: FormatAnimation.slide,
+      eventLoader: (day) => _getEventsForDay(day),
+      calendarFormat: _calendarFormat,
       startingDayOfWeek: firstDay == 0
           ? StartingDayOfWeek.monday
           : firstDay == 1
@@ -113,11 +121,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
               : StartingDayOfWeek.saturday,
       availableGestures: AvailableGestures.horizontalSwipe,
       calendarStyle: CalendarStyle(
-        selectedColor: Colors.orange,
-        todayColor: Colors.indigoAccent,
+        //selectedTextStyle: TextStyle().copyWith(color: Colors.orange),
+        selectedDecoration:
+            BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
+        todayTextStyle: TextStyle().copyWith(color: Colors.indigoAccent),
         outsideDaysVisible: false,
-        weekendStyle: TextStyle().copyWith(color: Colors.blue[600]),
-        holidayStyle: TextStyle().copyWith(color: Colors.blue[600]),
+        weekendTextStyle: TextStyle().copyWith(color: Colors.blue[600]),
+        holidayTextStyle: TextStyle().copyWith(color: Colors.blue[600]),
       ),
       daysOfWeekStyle: DaysOfWeekStyle(
         weekendStyle: TextStyle().copyWith(color: Colors.blue[600]),
@@ -127,34 +137,33 @@ class _CalendarScreenState extends State<CalendarScreen> {
             color: Theme.of(context).appBarTheme.textTheme.headline6.color),
         rightChevronIcon: Icon(Icons.chevron_right,
             color: Theme.of(context).appBarTheme.textTheme.headline6.color),
-        centerHeaderTitle: true,
+        titleCentered: true,
+        //centerHeaderTitle: true,
         formatButtonVisible: false,
       ),
-      builders: CalendarBuilders(
-        markersBuilder: (context, date, events, holidays) {
-          final children = <Widget>[];
+      calendarBuilders: CalendarBuilders(
+        markerBuilder: (context, day, events) {
+          Widget children;
           if (events.isNotEmpty) {
             final event = events[0] as Project;
-            children.add(
-              Positioned(
-                right: 1,
-                bottom: 2,
-                child: Container(
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: event.color //Colors.blue[400],
-                      ),
-                  width: 16.0,
-                  height: 16.0,
-                  child: Center(
-                    child: Text(
-                      '${events.length}',
-                      style: TextStyle().copyWith(
-                        color: event.color.computeLuminance() > 0.5
-                            ? Colors.black
-                            : Colors.white,
-                        fontSize: 12.0,
-                      ),
+            children = Positioned(
+              right: 1,
+              bottom: 2,
+              child: Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: event.color //Colors.blue[400],
+                    ),
+                width: 16.0,
+                height: 16.0,
+                child: Center(
+                  child: Text(
+                    '${events.length}',
+                    style: TextStyle().copyWith(
+                      color: event.color.computeLuminance() > 0.5
+                          ? Colors.black
+                          : Colors.white,
+                      fontSize: 12.0,
                     ),
                   ),
                 ),
@@ -164,10 +173,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
           return children;
         },
       ),
-      onDaySelected: (day, events, holidays) => setState(() {
-        date = day;
-        _selectedEvents = events;
-      }),
+      onDaySelected: (selectedDay, focusedDay) {
+        if (!isSameDay(_selectedDay, selectedDay)) {
+          setState(() {
+            _selectedDay = selectedDay;
+            _focusedDay = focusedDay;
+            _selectedEvents = _getEventsForDay(selectedDay);
+          });
+        }
+      },
+      onPageChanged: _onVisibleDaysChanged,
+      onFormatChanged: (format) {
+        if (_calendarFormat != format) {
+          setState(() {
+            _calendarFormat = format;
+          });
+        }
+      },
     );
   }
 
@@ -192,7 +214,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         direction: DismissDirection.endToStart,
         onDismissed: (direction) {
           context.read<ProjectsProvider>().deleteDayProject(
-              project: pr, date: DateTime(date.year, date.month, date.day));
+              project: pr,
+              date: DateTime(
+                  _selectedDay.year, _selectedDay.month, _selectedDay.day));
         },
         child: Card(
           margin: EdgeInsets.symmetric(vertical: 1, horizontal: 5),

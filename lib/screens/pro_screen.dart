@@ -88,9 +88,11 @@ class _UpsellScreenState extends State<UpsellScreen> {
         ),
         Container(
           width: MediaQuery.of(context).size.width * 0.6,
-          child: RaisedButton(
-            shape: StadiumBorder(),
-            color: Colors.indigo,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: StadiumBorder(),
+              primary: Colors.indigo,
+            ),
             child: Text(
               '${LocaleKeys.Upgrade.tr()} ${premium.offerings?.current?.lifetime?.product?.priceString ?? ''}',
               style: TextStyle(fontSize: 14, color: Colors.white),
@@ -107,9 +109,11 @@ class _UpsellScreenState extends State<UpsellScreen> {
         ),
         Container(
           width: MediaQuery.of(context).size.width * 0.6,
-          child: RaisedButton(
-            shape: StadiumBorder(),
-            color: Colors.grey[300],
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: StadiumBorder(),
+              primary: Colors.grey[300],
+            ),
             child: Text(
               LocaleKeys.RestorePurchase.tr(),
               style: TextStyle(fontSize: 14, color: Colors.black),

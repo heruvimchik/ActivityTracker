@@ -116,13 +116,17 @@ class _ExportProjectsState extends State<ExportProjects> {
           Align(
             child: Container(
               width: 230,
-              child: RaisedButton(
-                textColor: Colors.white,
-                color: Colors.indigo,
-                shape: StadiumBorder(),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: StadiumBorder(),
+                  primary: Colors.indigo,
+                ),
                 child: Text(
                   LocaleKeys.ExportCSV.tr(),
-                  style: TextStyle(fontSize: 13),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white,
+                  ),
                 ),
                 onPressed: () async {
                   List<List<String>> data = [];

@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
         selector: (_, set) =>
             Tuple2(set.darkTheme, set.language), //  set.darkTheme,
         builder: (context, data, child) {
-          context.locale = context.supportedLocales[data.item2 ?? 0];
+          context.setLocale(context.supportedLocales[data.item2 ?? 0]);
           return MaterialApp(
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,

@@ -78,8 +78,11 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 20),
-              child: RaisedButton(
-                shape: StadiumBorder(),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: StadiumBorder(),
+                  primary: Colors.indigo,
+                ),
                 onPressed: _textController.text.trim().isEmpty
                     ? null
                     : () {
@@ -95,7 +98,6 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                                 color: _colour);
                         Navigator.of(context).pop();
                       },
-                color: Colors.indigo,
                 child: Text(
                   widget.project == null
                       ? LocaleKeys.StartActivity.tr()

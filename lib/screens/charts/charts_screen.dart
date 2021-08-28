@@ -10,7 +10,6 @@ import 'package:activityTracker/providers/days_provider.dart';
 import 'package:activityTracker/providers/projects_provider.dart';
 
 class ChartsScreen extends StatefulWidget {
-  const ChartsScreen();
   @override
   _ChartsScreenState createState() => _ChartsScreenState();
 }
@@ -107,59 +106,64 @@ class _ChartsScreenState extends State<ChartsScreen> {
   Widget buildStack(List<ProjectDuration> projectDuration, double totalHours,
       {double radius}) {
     final hours = Duration(minutes: (totalHours * 60).toInt());
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        PieChart(
-          PieChartData(
-              pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
-                setState(() {
-                  if (pieTouchResponse.touchInput is FlLongPressEnd ||
-                      pieTouchResponse.touchInput is FlPanEnd) {
-                    _touchedIndex = -1;
-                  } else {
-                    _touchedIndex = pieTouchResponse.touchedSectionIndex;
-                    if (_touchedIndex != null && _touchedIndex >= 0)
-                      scrollController.scrollTo(
-                          index: _touchedIndex,
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeInOutCubic);
-                  }
-                });
-              }),
-              borderData: FlBorderData(
-                show: false,
-              ),
-              sectionsSpace: 0,
-              centerSpaceRadius: radius,
-              sections: List.generate(projectDuration.length, (int index) {
-                final projectDur = projectDuration[index];
-                final procent =
-                    (100.0 * projectDuration[index].duration / totalHours);
-                final String title =
-                    procent >= 1 ? "${procent.toStringAsFixed(0)}%" : '';
-                return PieChartSectionData(
-                  titlePositionPercentageOffset: 0.5,
-                  value: projectDur.duration,
-                  color: projectDur.project.color,
-                  title: title,
-                  titleStyle: TextStyle(
-                      fontSize: _touchedIndex == index ? 17 : 13,
-                      color: projectDur.project.color.computeLuminance() > 0.5
-                          ? Colors.black
-                          : Colors.white),
-                  radius: _touchedIndex == index ? 60 : 50,
-                );
-              })),
-        ),
-        Text(
-          totalHours.toInt().toStringAsFixed(0) +
-              ' ${LocaleKeys.Hrs.tr()} ' +
-              (hours.inMinutes - (hours.inHours * 60)).toStringAsFixed(0) +
-              ' ${LocaleKeys.Min.tr()}',
-          style: TextStyle(fontSize: 12),
-        )
-      ],
+    return Expanded(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          PieChart(
+            PieChartData(
+                pieTouchData: PieTouchData(
+                  enabled: true,
+                  touchCallback: (event, response) {
+                    setState(() {
+                      if (event is FlLongPressEnd || event is FlTapUpEvent) {
+                        _touchedIndex = -1;
+                      } else {
+                        _touchedIndex =
+                            response?.touchedSection?.touchedSectionIndex;
+                        if (_touchedIndex != null && _touchedIndex >= 0)
+                          scrollController.scrollTo(
+                              index: _touchedIndex,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOutCubic);
+                      }
+                    });
+                  },
+                ),
+                borderData: FlBorderData(
+                  show: false,
+                ),
+                sectionsSpace: 0,
+                centerSpaceRadius: radius,
+                sections: List.generate(projectDuration.length, (int index) {
+                  final projectDur = projectDuration[index];
+                  final procent =
+                      (100.0 * projectDuration[index].duration / totalHours);
+                  final String title =
+                      procent >= 1 ? "${procent.toStringAsFixed(0)}%" : '';
+                  return PieChartSectionData(
+                    titlePositionPercentageOffset: 0.5,
+                    value: projectDur.duration,
+                    color: projectDur.project.color,
+                    title: title,
+                    titleStyle: TextStyle(
+                        fontSize: _touchedIndex == index ? 17 : 13,
+                        color: projectDur.project.color.computeLuminance() > 0.5
+                            ? Colors.black
+                            : Colors.white),
+                    radius: _touchedIndex == index ? 60 : 50,
+                  );
+                })),
+          ),
+          Text(
+            totalHours.toInt().toStringAsFixed(0) +
+                ' ${LocaleKeys.Hrs.tr()} ' +
+                (hours.inMinutes - (hours.inHours * 60)).toStringAsFixed(0) +
+                ' ${LocaleKeys.Min.tr()}',
+            style: TextStyle(fontSize: 12),
+          )
+        ],
+      ),
     );
   }
 

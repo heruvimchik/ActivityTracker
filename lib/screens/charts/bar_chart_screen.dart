@@ -43,9 +43,10 @@ class BarChartScreen extends StatelessWidget {
             rec.endTime.difference(rec.startTime).inSeconds.toDouble() / 3600);
     double maxy = 0;
     if (MediaQuery.of(context).orientation == Orientation.portrait)
-      maxy = 83;
+      maxy = 100;
     else
       maxy = 130;
+
     Color col = Theme.of(context).appBarTheme.textTheme.headline6.color;
     final firstDay = context.select((SettingsProvider value) => value.firstDay);
     List<double> weekdaysTotal = [];
@@ -76,7 +77,7 @@ class BarChartScreen extends StatelessWidget {
                 enabled: false,
                 touchTooltipData: BarTouchTooltipData(
                   tooltipBgColor: Colors.transparent,
-                  tooltipBottomMargin: 1,
+                  tooltipMargin: 1,
                   getTooltipItem: (
                     BarChartGroupData group,
                     int groupIndex,
@@ -93,11 +94,15 @@ class BarChartScreen extends StatelessWidget {
                   },
                 ),
               ),
+              gridData: FlGridData(show: false),
               titlesData: FlTitlesData(
+                rightTitles: SideTitles(showTitles: false),
+                topTitles: SideTitles(showTitles: false),
                 show: true,
                 bottomTitles: SideTitles(
                   showTitles: true,
-                  getTextStyles: (value) => TextStyle(color: col, fontSize: 14),
+                  getTextStyles: (context, value) =>
+                      TextStyle(color: col, fontSize: 14),
                   margin: 10,
                   getTitles: (double value) {
                     final day = value.toInt();

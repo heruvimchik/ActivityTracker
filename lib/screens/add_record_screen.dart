@@ -123,7 +123,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     child: Text(
                       LocaleKeys.Date,
                       style: TextStyle(fontSize: 15),
-                    ).tr(context: context),
+                    ).tr(),
                   ),
                   Flexible(
                     fit: FlexFit.loose,
@@ -183,7 +183,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     child: Text(
                       LocaleKeys.Start,
                       style: TextStyle(fontSize: 15),
-                    ).tr(context: context),
+                    ).tr(),
                   ),
                   Flexible(
                     fit: FlexFit.loose,
@@ -262,7 +262,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     child: Text(
                       LocaleKeys.End,
                       style: TextStyle(fontSize: 15),
-                    ).tr(context: context),
+                    ).tr(),
                   ),
                   Flexible(
                     fit: FlexFit.loose,
@@ -393,9 +393,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
             Container(
               padding: EdgeInsets.only(top: 20),
               width: MediaQuery.of(context).size.width * 0.8,
-              child: RaisedButton(
-                shape: StadiumBorder(),
-                color: Colors.indigo,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: StadiumBorder(),
+                  primary: Colors.indigo,
+                ),
                 child: Text(
                   LocaleKeys.Save.tr(),
                   style: TextStyle(color: Colors.white),

@@ -123,6 +123,7 @@ class ProjectsProvider with ChangeNotifier {
       color: project.color,
       visibility: NotificationVisibility.public,
       showWhen: start,
+      usesChronometer: true,
       when: DateTime(now.year, now.month, now.day, now.hour, now.minute,
               now.second - run.inSeconds)
           .millisecondsSinceEpoch,

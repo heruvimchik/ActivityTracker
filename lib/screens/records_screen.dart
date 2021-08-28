@@ -95,7 +95,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
                   builder: (ctx) => AlertDialog(
                       title: Text(LocaleKeys.DeleteDialog.tr()),
                       actions: <Widget>[
-                        FlatButton(
+                        TextButton(
                             onPressed: () {
                               Navigator.of(ctx).pop();
                               Navigator.of(ctx).pop();
@@ -104,7 +104,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
                                   .deleteProject(widget.project);
                             },
                             child: Text(LocaleKeys.Yes.tr())),
-                        FlatButton(
+                        TextButton(
                             onPressed: () => Navigator.of(ctx).pop(),
                             child: Text(LocaleKeys.No.tr())),
                       ]),

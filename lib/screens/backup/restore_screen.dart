@@ -64,7 +64,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
                 builder: (ctx) => AlertDialog(
                   title: Text(LocaleKeys.DeleteBackup.tr()),
                   actions: <Widget>[
-                    FlatButton(
+                    TextButton(
                         onPressed: () async {
                           try {
                             await auth.deleteGoogleDriveFile(
@@ -83,7 +83,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
                           }
                         },
                         child: Text(LocaleKeys.Yes.tr())),
-                    FlatButton(
+                    TextButton(
                         onPressed: () => Navigator.of(ctx).pop(false),
                         child: Text(LocaleKeys.No.tr())),
                   ],
@@ -101,7 +101,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
                     builder: (ctx) => AlertDialog(
                       title: Text(LocaleKeys.RestoreBackup.tr()),
                       actions: <Widget>[
-                        FlatButton(
+                        TextButton(
                             onPressed: () async {
                               Navigator.of(ctx).pop();
                               try {
@@ -120,7 +120,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
                               }
                             },
                             child: Text(LocaleKeys.Yes.tr())),
-                        FlatButton(
+                        TextButton(
                             onPressed: () => Navigator.of(ctx).pop(),
                             child: Text(LocaleKeys.No.tr())),
                       ],

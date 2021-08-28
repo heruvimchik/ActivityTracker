@@ -55,10 +55,10 @@ class ProjectsScreen extends StatelessWidget {
               builder: (ctx) => AlertDialog(
                 title: Text(LocaleKeys.DeleteDialog.tr()),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                       onPressed: () => Navigator.of(ctx).pop(true),
                       child: Text(LocaleKeys.Yes.tr())),
-                  FlatButton(
+                  TextButton(
                       onPressed: () => Navigator.of(ctx).pop(false),
                       child: Text(LocaleKeys.No.tr())),
                 ],
