@@ -12,7 +12,8 @@ class ProjectItem extends StatelessWidget {
   final bool scrollable;
   final Project project;
 
-  const ProjectItem({Key key, this.scrollable, this.project}) : super(key: key);
+  const ProjectItem({Key? key, required this.scrollable, required this.project})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,8 @@ class ProjectItem extends StatelessWidget {
           title: Text(
             project.description,
             style: TextStyle(
-                color: Theme.of(context).appBarTheme.textTheme.headline6.color,
+                color:
+                    Theme.of(context).appBarTheme.textTheme!.headline6!.color,
                 fontSize: 14),
           ),
           leading: CircleAvatar(

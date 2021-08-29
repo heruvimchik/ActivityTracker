@@ -6,7 +6,7 @@ import 'package:activityTracker/providers/settings_provider.dart';
 
 class NoRecordsWidget extends StatelessWidget {
   const NoRecordsWidget({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

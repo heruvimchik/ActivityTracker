@@ -11,8 +11,7 @@ class ProjectsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ProjectsProvider>(
       builder: (context, projProvider, __) {
-        if (projProvider.projects == null ||
-            projProvider.projects.length == 0) {
+        if (projProvider.projects.length == 0) {
           return Center(
             child: SingleChildScrollView(
               child: Column(

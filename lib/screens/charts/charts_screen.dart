@@ -8,6 +8,7 @@ import 'package:activityTracker/generated/locale_keys.g.dart';
 import 'package:activityTracker/models/project.dart';
 import 'package:activityTracker/providers/days_provider.dart';
 import 'package:activityTracker/providers/projects_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class ChartsScreen extends StatefulWidget {
   @override
@@ -16,11 +17,11 @@ class ChartsScreen extends StatefulWidget {
 
 class _ChartsScreenState extends State<ChartsScreen> {
   ItemScrollController scrollController = ItemScrollController();
-  int _touchedIndex = -1;
+  int? _touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
-    final dateTimeRange = context.select<DaysProvider, DateTimeRange>(
+    final dateTimeRange = context.select<DaysProvider, DateTimeRange?>(
         (daysProvider) => daysProvider.dateRange);
 
     List<ProjectDuration> projectDuration = <ProjectDuration>[];
@@ -32,8 +33,8 @@ class _ChartsScreenState extends State<ChartsScreen> {
           pro.records.where((record) => record.endTime != null).toList();
       if (dateTimeRange != null) {
         timersStop = timersStop.where((timer) {
-          final date = DateTime(
-              timer.startTime.year, timer.startTime.month, timer.startTime.day);
+          final date = DateTime(timer.startTime!.year, timer.startTime!.month,
+              timer.startTime!.day);
           return (date
                   .isAfter(dateTimeRange.start.subtract(Duration(days: 1))) &&
               date.isBefore(dateTimeRange.end.add(Duration(days: 1))));
@@ -44,12 +45,15 @@ class _ChartsScreenState extends State<ChartsScreen> {
           duration,
           (double sum, Record rec) =>
               sum +
-              rec.endTime.difference(rec.startTime).inSeconds.toDouble() /
+              rec.endTime!.difference(rec.startTime!).inSeconds.toDouble() /
                   3600);
       totalHours += duration;
       if (timersStop.isNotEmpty)
         projectDuration.add(ProjectDuration(
-            project: Project(color: pro.color, description: pro.description),
+            project: Project(
+                projectID: Uuid().v4(),
+                color: pro.color,
+                description: pro.description),
             duration: duration));
     });
     projectDuration = projectDuration.reversed.toList();
@@ -93,7 +97,7 @@ class _ChartsScreenState extends State<ChartsScreen> {
   }
 
   Column buildColumn(List<ProjectDuration> projectDuration, double totalHours) {
-    final app = Scaffold.of(context).appBarMaxHeight;
+    final app = Scaffold.of(context).appBarMaxHeight!;
     return Column(
       children: [
         buildStack(projectDuration, totalHours,
@@ -104,7 +108,7 @@ class _ChartsScreenState extends State<ChartsScreen> {
   }
 
   Widget buildStack(List<ProjectDuration> projectDuration, double totalHours,
-      {double radius}) {
+      {double? radius}) {
     final hours = Duration(minutes: (totalHours * 60).toInt());
     return Expanded(
       child: Stack(
@@ -115,19 +119,20 @@ class _ChartsScreenState extends State<ChartsScreen> {
                 pieTouchData: PieTouchData(
                   enabled: true,
                   touchCallback: (event, response) {
-                    setState(() {
-                      if (event is FlLongPressEnd || event is FlTapUpEvent) {
-                        _touchedIndex = -1;
-                      } else {
-                        _touchedIndex =
-                            response?.touchedSection?.touchedSectionIndex;
-                        if (_touchedIndex != null && _touchedIndex >= 0)
-                          scrollController.scrollTo(
-                              index: _touchedIndex,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.easeInOutCubic);
+                    if (event is FlLongPressEnd || event is FlTapUpEvent) {
+                      _touchedIndex = -1;
+                      setState(() {});
+                    } else {
+                      _touchedIndex =
+                          response?.touchedSection?.touchedSectionIndex;
+                      if (_touchedIndex != null && _touchedIndex! >= 0) {
+                        scrollController.scrollTo(
+                            index: _touchedIndex!,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.easeInOutCubic);
+                        setState(() {});
                       }
-                    });
+                    }
                   },
                 ),
                 borderData: FlBorderData(
@@ -137,10 +142,10 @@ class _ChartsScreenState extends State<ChartsScreen> {
                 centerSpaceRadius: radius,
                 sections: List.generate(projectDuration.length, (int index) {
                   final projectDur = projectDuration[index];
-                  final procent =
+                  final percent =
                       (100.0 * projectDuration[index].duration / totalHours);
                   final String title =
-                      procent >= 1 ? "${procent.toStringAsFixed(0)}%" : '';
+                      percent >= 1 ? "${percent.toStringAsFixed(0)}%" : '';
                   return PieChartSectionData(
                     titlePositionPercentageOffset: 0.5,
                     value: projectDur.duration,
@@ -220,5 +225,5 @@ class ProjectDuration {
   final Project project;
   final double duration;
 
-  ProjectDuration({this.project, this.duration});
+  ProjectDuration({required this.project, required this.duration});
 }

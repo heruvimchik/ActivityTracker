@@ -23,7 +23,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
   final _flushBarSuccessDownl =
       FlushBarMy.succesBar(text: LocaleKeys.SuccessDownload.tr());
   final _flushBarErrorDownl =
-      FlushBarMy.errorBar(text: LocaleKeys.SuccessDownload.tr());
+      FlushBarMy.errorBar(text: LocaleKeys.ErrorDownload.tr());
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-            color: Theme.of(context).appBarTheme.actionsIconTheme.color),
+            color: Theme.of(context).appBarTheme.actionsIconTheme!.color),
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text(LocaleKeys.Restore.tr(), style: TextStyle(fontSize: 16)),
       ),
@@ -51,7 +51,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
           return ListView.builder(
             shrinkWrap: true,
             itemBuilder: (context, index) => Dismissible(
-              key: Key('${snapshot.data.files[index].name}'),
+              key: Key('${snapshot.data!.files![index].name}'),
               direction: DismissDirection.endToStart,
               background: Container(
                 color: Theme.of(context).errorColor,
@@ -68,7 +68,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
                         onPressed: () async {
                           try {
                             await auth.deleteGoogleDriveFile(
-                                gdID: snapshot.data.files[index].id);
+                                gdID: snapshot.data!.files![index].id!);
                             Navigator.of(ctx).pop(true);
                             if (mounted)
                               _flushBarSuccess
@@ -95,7 +95,8 @@ class _RestoreScreenState extends State<RestoreScreen> {
                 child: ListTile(
                   title: Text(hourFormat.format(
                       DateTime.fromMillisecondsSinceEpoch(
-                          int.tryParse(snapshot.data.files[index].name) ?? 0))),
+                          int.tryParse(snapshot.data!.files![index].name!) ??
+                              0))),
                   onTap: () => showDialog(
                     context: context,
                     builder: (ctx) => AlertDialog(
@@ -106,7 +107,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
                               Navigator.of(ctx).pop();
                               try {
                                 await auth.downloadGoogleDriveFile(
-                                    gdID: snapshot.data.files[index].id,
+                                    gdID: snapshot.data!.files![index].id!,
                                     projects: proj);
                                 if (mounted)
                                   _flushBarSuccessDownl
@@ -129,7 +130,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
                 ),
               ),
             ),
-            itemCount: snapshot.data.files.length,
+            itemCount: snapshot.data!.files!.length,
           );
         },
       ),

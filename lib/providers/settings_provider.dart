@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:activityTracker/generated/locale_keys.g.dart';
 
@@ -37,14 +38,14 @@ class SettingsProvider with ChangeNotifier {
     Duration(days: 180),
   ];
 
-  SharedPreferences _prefs;
+  late SharedPreferences _prefs;
   bool _hour24 = true;
   bool _darkTheme = false;
   int _firstDay = 0;
   int _language = 0;
   int _autoBackup = 0;
-  DateTime expireDate;
-  Future<void> settingsLoaded;
+  DateTime? expireDate;
+  Future<void>? settingsLoaded;
 
   List<String> get dayOfWeek => [..._dayOfWeek];
   List<String> get languageList => [..._languageList];
@@ -56,11 +57,11 @@ class SettingsProvider with ChangeNotifier {
   int get firstDay => _firstDay;
   int get language => _language;
 
-  SettingsProvider() {
-    settingsLoaded = _getSettings();
+  SettingsProvider(BuildContext context) {
+    settingsLoaded = _getSettings(context);
   }
 
-  Future<void> _getSettings() async {
+  Future<void> _getSettings(BuildContext context) async {
     _prefs = await SharedPreferences.getInstance();
     _hour24 = _prefs.getBool("hour24") ?? true;
     _darkTheme = _prefs.getBool("darkTheme") ?? false;
@@ -76,6 +77,7 @@ class SettingsProvider with ChangeNotifier {
       _autoBackup = 0;
     if (_autoBackup > 0 && expireDate == null) setAutoExpire(_autoBackup);
 
+    await context.setLocale(context.supportedLocales[_language]);
     notifyListeners();
   }
 
@@ -109,19 +111,20 @@ class SettingsProvider with ChangeNotifier {
 
   Future<void> setAutoExpire(int value) async {
     expireDate = DateTime.now().add(autoExpireList[value]);
-    await _prefs.setString('expireDate', expireDate.toIso8601String());
+    await _prefs.setString('expireDate', expireDate!.toIso8601String());
   }
 
-  Future<void> setFirstDay(int value) async {
+  Future<void> setFirstDay(int value, BuildContext context) async {
     if (value > _dayOfWeek.length - 1) value = 0;
     if (value < 0) value = _dayOfWeek.length - 1;
     _firstDay = value;
     await _setInt('firstDay', value);
   }
 
-  Future<void> setLanguage(int value) async {
+  Future<void> setLanguage(int value, BuildContext context) async {
     if (value > _languageList.length - 1) value = 0;
     if (value < 0) value = _languageList.length - 1;
+    await context.setLocale(context.supportedLocales[value]);
     _language = value;
     await _setInt('language', value);
   }

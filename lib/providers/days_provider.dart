@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:activityTracker/models/project.dart';
 
@@ -10,11 +11,11 @@ class Days {
 class DaysProvider with ChangeNotifier {
   List<Days> _days = [];
   List<Days> _initialDays = [];
-  DateTimeRange _dateRange;
+  DateTimeRange? _dateRange;
 
   List<Days> get days => [..._days];
   List<Days> get initialDays => [..._initialDays];
-  DateTimeRange get dateRange => _dateRange;
+  DateTimeRange? get dateRange => _dateRange;
 
   Future<void> setProjectsDays(List<Project> value) async {
     _initialDays = value.reversed.fold(<Days>[], _groupDays);
@@ -32,22 +33,22 @@ class DaysProvider with ChangeNotifier {
         records: <Record>[record]);
     bool newDay = _initialDays.isEmpty ||
         !_initialDays.any((Days day) =>
-            day.date.year == record.startTime.year &&
-            day.date.month == record.startTime.month &&
-            day.date.day == record.startTime.day);
+            day.date.year == record.startTime!.year &&
+            day.date.month == record.startTime!.month &&
+            day.date.day == record.startTime!.day);
     if (newDay) {
       _initialDays.add(Days(DateTime(
-        record.startTime.year,
-        record.startTime.month,
-        record.startTime.day,
+        record.startTime!.year,
+        record.startTime!.month,
+        record.startTime!.day,
       )));
       _initialDays.sort((a, b) => b.date.compareTo(a.date));
     }
     _initialDays
         .firstWhere((Days day) =>
-            day.date.year == record.startTime.year &&
-            day.date.month == record.startTime.month &&
-            day.date.day == record.startTime.day)
+            day.date.year == record.startTime!.year &&
+            day.date.month == record.startTime!.month &&
+            day.date.day == record.startTime!.day)
         .entries
         .insert(0, newProj);
     _notify();
@@ -55,9 +56,8 @@ class DaysProvider with ChangeNotifier {
 
   void updateProjectDays(Project project) {
     _initialDays.forEach((days) {
-      Project p = days.entries.firstWhere(
-          (entry) => entry.projectID == project.projectID,
-          orElse: () => null);
+      Project? p = days.entries
+          .firstWhereOrNull((entry) => entry.projectID == project.projectID);
       p?.description = project.description;
       p?.color = project.color;
     });
@@ -72,7 +72,7 @@ class DaysProvider with ChangeNotifier {
     _notify();
   }
 
-  void deleteRecordDays(String projectId, String recordID) {
+  void deleteRecordDays(String projectId, String? recordID) {
     for (Days day in _initialDays) {
       final p = day.entries.indexWhere((entry) => entry.projectID == projectId);
       if (p < 0) continue;
@@ -88,8 +88,8 @@ class DaysProvider with ChangeNotifier {
   }
 
   void deleteProjectInDay(String projectId, DateTime date) {
-    Days day = _initialDays.firstWhere((element) => element.date == date,
-        orElse: () => null);
+    Days? day =
+        _initialDays.firstWhereOrNull((element) => element.date == date);
     if (day == null) return;
     day.entries.removeWhere((entry) => entry.projectID == projectId);
     if (day.entries.isEmpty) _initialDays.remove(day);
@@ -99,21 +99,21 @@ class DaysProvider with ChangeNotifier {
   bool addNewDay(Project proj, Record record) {
     bool newDay = _initialDays.isEmpty ||
         !_initialDays.any((Days day) =>
-            day.date.year == record.startTime.year &&
-            day.date.month == record.startTime.month &&
-            day.date.day == record.startTime.day);
+            day.date.year == record.startTime!.year &&
+            day.date.month == record.startTime!.month &&
+            day.date.day == record.startTime!.day);
     if (newDay) {
       _initialDays.add(Days(DateTime(
-        record.startTime.year,
-        record.startTime.month,
-        record.startTime.day,
+        record.startTime!.year,
+        record.startTime!.month,
+        record.startTime!.day,
       )));
     }
 
     final dayInit = _initialDays.indexWhere((Days day) =>
-        day.date.year == record.startTime.year &&
-        day.date.month == record.startTime.month &&
-        day.date.day == record.startTime.day);
+        day.date.year == record.startTime!.year &&
+        day.date.month == record.startTime!.month &&
+        day.date.day == record.startTime!.day);
     if (_initialDays[dayInit]
             .entries
             .indexWhere((index) => index.projectID == proj.projectID) <
@@ -140,9 +140,10 @@ class DaysProvider with ChangeNotifier {
       final r = day.entries[p].records
           .indexWhere((rec) => rec.recordID == record.recordID);
       if (r < 0) continue;
-      if (day.entries[p].records[r].startTime.year != record.startTime.year ||
-          day.entries[p].records[r].startTime.month != record.startTime.month ||
-          day.entries[p].records[r].startTime.day != record.startTime.day) {
+      if (day.entries[p].records[r].startTime!.year != record.startTime!.year ||
+          day.entries[p].records[r].startTime!.month !=
+              record.startTime!.month ||
+          day.entries[p].records[r].startTime!.day != record.startTime!.day) {
         day.entries[p].records.removeAt(r);
         final proj = day.entries.elementAt(p);
         if (day.entries[p].records.isEmpty) day.entries.removeAt(p);
@@ -171,7 +172,7 @@ class DaysProvider with ChangeNotifier {
     _notify();
   }
 
-  set dateRange(DateTimeRange value) {
+  set dateRange(DateTimeRange? value) {
     _dateRange = value;
     _notify();
   }
@@ -180,20 +181,20 @@ class DaysProvider with ChangeNotifier {
     days = project.records.fold(days, (List<Days> daysRecords, Record record) {
       bool newDay = daysRecords.isEmpty ||
           !daysRecords.any((Days day) =>
-              day.date.year == record.startTime.year &&
-              day.date.month == record.startTime.month &&
-              day.date.day == record.startTime.day);
+              day.date.year == record.startTime!.year &&
+              day.date.month == record.startTime!.month &&
+              day.date.day == record.startTime!.day);
       if (newDay) {
         daysRecords.add(Days(DateTime(
-          record.startTime.year,
-          record.startTime.month,
-          record.startTime.day,
+          record.startTime!.year,
+          record.startTime!.month,
+          record.startTime!.day,
         )));
       }
       final day = daysRecords.indexWhere((Days day) =>
-          day.date.year == record.startTime.year &&
-          day.date.month == record.startTime.month &&
-          day.date.day == record.startTime.day);
+          day.date.year == record.startTime!.year &&
+          day.date.month == record.startTime!.month &&
+          day.date.day == record.startTime!.day);
       if (daysRecords[day]
               .entries
               .indexWhere((index) => index.projectID == project.projectID) <
@@ -219,9 +220,9 @@ class DaysProvider with ChangeNotifier {
     _days = _initialDays;
     if (_dateRange != null) {
       _days = _days
-          .where((day) =>
-              (day.date.isAfter(_dateRange.start.subtract(Duration(days: 1))) &&
-                  day.date.isBefore(_dateRange.end.add(Duration(days: 1)))))
+          .where((day) => (day.date
+                  .isAfter(_dateRange!.start.subtract(Duration(days: 1))) &&
+              day.date.isBefore(_dateRange!.end.add(Duration(days: 1)))))
           .toList();
     }
     notifyListeners();

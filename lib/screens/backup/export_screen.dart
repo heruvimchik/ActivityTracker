@@ -16,7 +16,7 @@ import 'package:activityTracker/helpers/timer_handler.dart';
 class ExportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final dateTimeRange = context.select<DaysProvider, DateTimeRange>(
+    final dateTimeRange = context.select<DaysProvider, DateTimeRange?>(
         (daysProvider) => daysProvider.dateRange);
     final proj = Provider.of<ProjectsProvider>(context).projects;
     List<Project> filteredProjects = [];
@@ -25,8 +25,8 @@ class ExportScreen extends StatelessWidget {
           pro.records.where((record) => record.endTime != null).toList();
       if (dateTimeRange != null) {
         timersStop = timersStop.where((timer) {
-          final date = DateTime(
-              timer.startTime.year, timer.startTime.month, timer.startTime.day);
+          final date = DateTime(timer.startTime!.year, timer.startTime!.month,
+              timer.startTime!.day);
           return (date
                   .isAfter(dateTimeRange.start.subtract(Duration(days: 1))) &&
               date.isBefore(dateTimeRange.end.add(Duration(days: 1))));
@@ -85,12 +85,12 @@ class ExportScreen extends StatelessWidget {
 }
 
 class ExportProjects extends StatefulWidget {
-  ExportProjects({@required this.filteredProjects}) {
+  ExportProjects({required this.filteredProjects}) {
     filteredProjects.forEach((element) {
       _selectedProjects.add(element.projectID);
     });
   }
-  final List<String> _selectedProjects = [];
+  final List<String?> _selectedProjects = [];
   final List<Project> filteredProjects;
 
   @override
@@ -129,21 +129,21 @@ class _ExportProjectsState extends State<ExportProjects> {
                   ),
                 ),
                 onPressed: () async {
-                  List<List<String>> data = [];
+                  List<List<String?>> data = [];
                   widget.filteredProjects.forEach((project) {
                     if (widget._selectedProjects.indexWhere(
                             (element) => element == project.projectID) >=
                         0) {
                       List<Record> timersStop = project.records;
                       timersStop.forEach((record) {
-                        List<String> row = [];
+                        List<String?> row = [];
                         row.add(project.description);
-                        row.add(dateFormat.format(record.startTime));
-                        row.add(hourFormat.format(record.startTime));
-                        row.add(hourFormat.format(record.endTime));
+                        row.add(dateFormat.format(record.startTime!));
+                        row.add(hourFormat.format(record.startTime!));
+                        row.add(hourFormat.format(record.endTime!));
                         row.add(Duration(
-                                seconds: record.endTime
-                                    .difference(record.startTime)
+                                seconds: record.endTime!
+                                    .difference(record.startTime!)
                                     .inSeconds)
                             .formatDuration());
                         data.add(row);
@@ -151,12 +151,12 @@ class _ExportProjectsState extends State<ExportProjects> {
                     }
                   });
                   data.sort((a, b) =>
-                      DateTime.parse(a[1]).compareTo(DateTime.parse(b[1])));
+                      DateTime.parse(a[1]!).compareTo(DateTime.parse(b[1]!)));
                   data.insert(0, headers);
                   String csv = ListToCsvConverter().convert(data);
-                  Directory directory = await getExternalStorageDirectory();
+                  Directory? directory = await getExternalStorageDirectory();
                   final String localPath =
-                      '${directory.path}/activityTracker.csv';
+                      '${directory!.path}/activityTracker.csv';
                   File file = File(localPath);
                   await file.writeAsString(csv, flush: true);
                   await Share.shareFiles([localPath], text: 'Export');
@@ -214,8 +214,8 @@ class _ExportProjectsState extends State<ExportProjects> {
                       style: TextStyle(
                           color: Theme.of(context)
                               .appBarTheme
-                              .textTheme
-                              .headline6
+                              .textTheme!
+                              .headline6!
                               .color)),
                   value: widget._selectedProjects
                       .any((projectID) => projectID == pr.projectID),

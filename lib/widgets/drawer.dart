@@ -141,7 +141,7 @@ class AppDrawer extends StatelessWidget {
                       if (snapshot.connectionState == ConnectionState.waiting)
                         return Text('');
                       return Text(
-                        '${snapshot.data.version} + ${snapshot.data.buildNumber}',
+                        '${snapshot.data!.version} + ${snapshot.data!.buildNumber}',
                         style: TextStyle(
                             fontWeight: FontWeight.w200,
                             fontSize: 13,
@@ -193,9 +193,13 @@ class ChooseSetting extends StatelessWidget {
   final String title;
   final String listValue;
   final int value;
-  final Function(int) onTap;
+  final Function(int, BuildContext context) onTap;
 
-  const ChooseSetting({this.title, this.listValue, this.value, this.onTap});
+  const ChooseSetting(
+      {required this.title,
+      required this.listValue,
+      required this.value,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +224,7 @@ class ChooseSetting extends StatelessWidget {
               ),
               onPressed: () {
                 int v = value - 1;
-                onTap(v);
+                onTap(v, context);
               },
             ),
           ),
@@ -235,7 +239,7 @@ class ChooseSetting extends StatelessWidget {
             icon: Icon(Icons.keyboard_arrow_right, size: 18),
             onPressed: () {
               int v = value + 1;
-              onTap(v);
+              onTap(v, context);
             },
           ),
         ],

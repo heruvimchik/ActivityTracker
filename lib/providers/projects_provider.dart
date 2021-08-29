@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:activityTracker/generated/locale_keys.g.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -11,13 +12,13 @@ import 'package:activityTracker/models/project.dart';
 
 class ProjectsProvider with ChangeNotifier {
   final DaysProvider _daysProvider;
-  List<Project> _projects;
+  List<Project> _projects = [];
   bool _isLoaded = false;
 
   bool get isLoaded => _isLoaded;
   List<Project> get projects => [..._projects];
 
-  ProjectsProvider(this._daysProvider) : assert(_daysProvider != null) {
+  ProjectsProvider(this._daysProvider) {
     fetchProjects();
   }
 
@@ -92,7 +93,7 @@ class ProjectsProvider with ChangeNotifier {
         ?.deleteNotificationChannel(channelId);
   }
 
-  Future _selectNotification(String payload) async {
+  Future _selectNotification(String? payload) async {
     if (payload != null && payload.isNotEmpty) {
       final result = payload.split(' ');
       if (result[0] == 'Start')
@@ -102,18 +103,19 @@ class ProjectsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _showNotification({Project project, bool start}) async {
+  Future<void> _showNotification(
+      {required Project project, required bool start}) async {
     final timers = project.records.where((timer) => timer.endTime != null);
     Duration run = Duration(
         seconds: timers.fold(
             0,
             (int sum, Record timer) =>
-                sum + timer.endTime.difference(timer.startTime).inSeconds));
+                sum + timer.endTime!.difference(timer.startTime!).inSeconds));
     final now = DateTime.now();
-    final timerRun = project.records
-        .firstWhere((timer) => timer.endTime == null, orElse: () => null);
+    final timerRun =
+        project.records.firstWhereOrNull((timer) => timer.endTime == null);
     if (timerRun != null) {
-      run += Duration(seconds: now.difference(timerRun.startTime).inSeconds);
+      run += Duration(seconds: now.difference(timerRun.startTime!).inSeconds);
     }
 
     final androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -123,10 +125,12 @@ class ProjectsProvider with ChangeNotifier {
       color: project.color,
       visibility: NotificationVisibility.public,
       showWhen: start,
-      usesChronometer: true,
-      when: DateTime(now.year, now.month, now.day, now.hour, now.minute,
-              now.second - run.inSeconds)
-          .millisecondsSinceEpoch,
+      usesChronometer: start,
+      when: start
+          ? DateTime(now.year, now.month, now.day, now.hour, now.minute,
+                  now.second - run.inSeconds)
+              .millisecondsSinceEpoch
+          : null,
       onlyAlertOnce: true,
       autoCancel: false,
       ongoing: start,
@@ -168,7 +172,9 @@ class ProjectsProvider with ChangeNotifier {
   }
 
   Future<void> updateProject(
-      {@required String updProjectId, String description, Color color}) async {
+      {required String? updProjectId,
+      String? description,
+      Color? color}) async {
     final index = _projects.indexWhere((prj) => prj.projectID == updProjectId);
     if (index < 0) return;
     _projects[index] = _projects[index].copyWith(
@@ -187,7 +193,7 @@ class ProjectsProvider with ChangeNotifier {
   }
 
   Future<void> updateRecord(
-      {@required String projectID, Record updRecord}) async {
+      {required String projectID, required Record updRecord}) async {
     final index = _projects.indexWhere((prj) => prj.projectID == projectID);
     if (index < 0) return;
     final indRec = _projects[index]
@@ -222,17 +228,17 @@ class ProjectsProvider with ChangeNotifier {
     //  _showNotification(project: _projects[index], start: false);
   }
 
-  Future<void> addRecord(String projectID) async {
+  Future<void> addRecord(String? projectID) async {
     final index = _projects.indexWhere((prj) => prj.projectID == projectID);
     if (index < 0) {
-      final id = projectID.replaceAll('-', '');
+      final id = projectID!.replaceAll('-', '');
       final number = int.parse(id.substring(0, 8), radix: 16) & 0x7fffffff;
       flutterLocalNotificationsPlugin.cancel(number);
       return;
     }
     final running = _projects[index]
         .records
-        .firstWhere((timer) => timer.endTime == null, orElse: () => null);
+        .firstWhereOrNull((timer) => timer.endTime == null);
     if (running != null) return;
     final record = Record(
       recordID: Uuid().v4(),
@@ -258,7 +264,7 @@ class ProjectsProvider with ChangeNotifier {
     final indexStop =
         _projects[index].records.indexWhere((timer) => timer.endTime == null);
     if (indexStop < 0) return;
-    final start = _projects[index].records[indexStop].startTime;
+    final start = _projects[index].records[indexStop].startTime!;
     if (now.year != start.year ||
         now.month != start.month ||
         now.day != start.day) {
@@ -305,12 +311,12 @@ class ProjectsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteRecord(String projectID, String recordID) async {
+  Future<void> deleteRecord(String projectID, String? recordID) async {
     final index = _projects.indexWhere((prj) => prj.projectID == projectID);
     if (index < 0) return;
     final runningDeleted = _projects[index]
         .records
-        .firstWhere((timer) => timer.endTime == null, orElse: () => null);
+        .firstWhereOrNull((timer) => timer.endTime == null);
 
     _projects[index]
         .records
@@ -328,7 +334,8 @@ class ProjectsProvider with ChangeNotifier {
       _showNotification(project: _projects[index], start: false);
   }
 
-  Future<void> deleteDayProject({Project project, DateTime date}) async {
+  Future<void> deleteDayProject(
+      {required Project project, required DateTime date}) async {
     final index =
         _projects.indexWhere((prj) => prj.projectID == project.projectID);
     if (index < 0) return;

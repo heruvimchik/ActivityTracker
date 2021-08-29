@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class NavigationBar extends StatelessWidget {
-  NavigationBar({this.tabIndex, this.onChangeTabIndex, this.tabs});
   final int tabIndex;
   final Function(int tabIndex) onChangeTabIndex;
-  final Color _color = Colors.grey[500];
-
   final List<NavigationBarTab> tabs;
 
+  NavigationBar(
+      {required this.tabIndex,
+      required this.onChangeTabIndex,
+      required this.tabs});
+
+  final Color _color = Colors.grey[500] as Color;
   @override
   Widget build(BuildContext context) {
     final Color _backgroundColor = Theme.of(context).backgroundColor;
@@ -48,9 +51,9 @@ class NavigationBar extends StatelessWidget {
   }
 
   Widget _buildTabUnit({
-    BuildContext context,
-    int index,
-    bool isSelected,
+    required BuildContext context,
+    required int index,
+    required bool isSelected,
   }) {
     final tab = tabs[index];
     final color = isSelected
@@ -73,7 +76,7 @@ class NavigationBar extends StatelessWidget {
                 size: 27,
               ),
               Text(
-                tab.title.tr(),
+                tab.title!.tr(),
                 maxLines: 1,
                 overflow: TextOverflow.clip,
                 style: TextStyle(
@@ -92,6 +95,6 @@ class NavigationBar extends StatelessWidget {
 class NavigationBarTab {
   NavigationBarTab({this.title, this.icon});
 
-  String title;
-  IconData icon;
+  String? title;
+  IconData? icon;
 }

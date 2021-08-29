@@ -1,4 +1,4 @@
-import 'package:flushbar/flushbar.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:activityTracker/generated/locale_keys.g.dart';
@@ -9,7 +9,7 @@ final date12h = DateFormat('MMM dd yyyy hh:mm:ss a', LocaleKeys.locale.tr());
 final dateFormatUTC = DateFormat('yyyy-MM-dd\'T\'HH:mm:ss.sss\'Z\'');
 
 class FlushBarMy {
-  static Flushbar succesBar({@required String text}) {
+  static Flushbar succesBar({required String text}) {
     return Flushbar(
       message: text,
       backgroundColor: Colors.black,
@@ -24,7 +24,7 @@ class FlushBarMy {
     );
   }
 
-  static Flushbar errorBar({@required String text}) {
+  static Flushbar errorBar({required String text}) {
     return Flushbar(
       message: text,
       backgroundColor: Colors.black,

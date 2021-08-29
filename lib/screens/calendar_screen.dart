@@ -18,18 +18,18 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   Map<DateTime, List> _events = {};
-  PageController _pageController;
+  late PageController _pageController;
   List _selectedEvents = [];
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
-  DateTime first;
-  DateTime last;
+  late DateTime first;
+  late DateTime last;
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   @override
   void initState() {
-    first = DateTime(_focusedDay.year, _focusedDay.month - 1, _focusedDay.day);
-    last = DateTime(_focusedDay.year, _focusedDay.month + 1, _focusedDay.day);
+    first = DateTime(_focusedDay.year, _focusedDay.month - 2, _focusedDay.day);
+    last = DateTime(_focusedDay.year, _focusedDay.month + 2, _focusedDay.day);
     final days = Provider.of<DaysProvider>(context, listen: false)
         .initialDays
         .where((element) {
@@ -52,7 +52,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-            color: Theme.of(context).appBarTheme.actionsIconTheme.color),
+            color: Theme.of(context).appBarTheme.actionsIconTheme!.color),
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text(
           LocaleKeys.Calendar.tr(),
@@ -87,8 +87,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   void _onVisibleDaysChanged(focusedDay) {
     _focusedDay = focusedDay;
-    final first = DateTime(_focusedDay.year, _focusedDay.month, 0);
-    final last = DateTime(_focusedDay.year, _focusedDay.month, 32);
+    final first = DateTime(_focusedDay.year, _focusedDay.month - 1, 0);
+    final last = DateTime(_focusedDay.year, _focusedDay.month + 1, 32);
     final days = Provider.of<DaysProvider>(context, listen: false)
         .initialDays
         .where((element) {
@@ -134,16 +134,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
       ),
       headerStyle: HeaderStyle(
         leftChevronIcon: Icon(Icons.chevron_left,
-            color: Theme.of(context).appBarTheme.textTheme.headline6.color),
+            color: Theme.of(context).appBarTheme.textTheme!.headline6!.color),
         rightChevronIcon: Icon(Icons.chevron_right,
-            color: Theme.of(context).appBarTheme.textTheme.headline6.color),
+            color: Theme.of(context).appBarTheme.textTheme!.headline6!.color),
         titleCentered: true,
         //centerHeaderTitle: true,
         formatButtonVisible: false,
       ),
       calendarBuilders: CalendarBuilders(
         markerBuilder: (context, day, events) {
-          Widget children;
+          Widget? children;
           if (events.isNotEmpty) {
             final event = events[0] as Project;
             children = Positioned(
@@ -227,8 +227,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
               title: Text(
                 pr.description,
                 style: TextStyle(
-                    color:
-                        Theme.of(context).appBarTheme.textTheme.headline6.color,
+                    color: Theme.of(context)
+                        .appBarTheme
+                        .textTheme!
+                        .headline6!
+                        .color,
                     fontSize: 14),
               ),
               leading: CircleAvatar(

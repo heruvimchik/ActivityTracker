@@ -13,25 +13,25 @@ import 'package:activityTracker/providers/projects_provider.dart';
 import 'settings_provider.dart';
 
 class AuthProvider with ChangeNotifier {
-  GoogleSignInAccount googleSignInAccount;
-  GoogleHttpClient _client;
-  ga.DriveApi _drive;
-  Timer _authTimer;
+  GoogleSignInAccount? googleSignInAccount;
+  late GoogleHttpClient _client;
+  late ga.DriveApi _drive;
+  Timer? _authTimer;
   final SettingsProvider _settingsProvider;
 
   final auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn =
       GoogleSignIn(scopes: ['https://www.googleapis.com/auth/drive.appdata']);
-  Future<ga.FileList> filesLoaded;
+  Future<ga.FileList>? filesLoaded;
 
   bool _isLoadingFiles = false;
 
-  AuthProvider(this._settingsProvider) : assert(_settingsProvider != null);
+  AuthProvider(this._settingsProvider);
 
   bool get isLoadingFiles => _isLoadingFiles;
 
   Future<void> logoutFromGoogle() async {
-    if (_authTimer != null) _authTimer.cancel();
+    if (_authTimer != null) _authTimer!.cancel();
 
     await googleSignIn.signOut();
     await auth.signOut();
@@ -41,7 +41,7 @@ class AuthProvider with ChangeNotifier {
     googleSignInAccount = googleSignIn.currentUser;
     if (googleSignInAccount == null)
       googleSignInAccount = await googleSignIn.signInSilently();
-    _client = GoogleHttpClient(await googleSignInAccount.authHeaders);
+    _client = GoogleHttpClient(await googleSignInAccount!.authHeaders);
     _drive = ga.DriveApi(_client);
   }
 
@@ -91,7 +91,7 @@ class AuthProvider with ChangeNotifier {
       if (googleSignInAccount == null) return;
     }
     final GoogleSignInAuthentication googleAuth =
-        await googleSignInAccount.authentication;
+        await googleSignInAccount!.authentication;
 
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
@@ -101,12 +101,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> downloadGoogleDriveFile(
-      {String gdID, ProjectsProvider projects}) async {
+      {required String gdID, required ProjectsProvider projects}) async {
     await _init();
     Directory dbPath = await getApplicationDocumentsDirectory();
     final filepath = path.join(dbPath.path, 'projects.db');
     ga.Media file = await _drive.files
-        .get(gdID, downloadOptions: ga.DownloadOptions.fullMedia);
+        .get(gdID, downloadOptions: ga.DownloadOptions.fullMedia) as ga.Media;
 
     final saveFile = File(filepath);
     List<int> dataStore = [];
@@ -118,7 +118,7 @@ class AuthProvider with ChangeNotifier {
     }, onError: (error) {});
   }
 
-  Future<void> deleteGoogleDriveFile({String gdID}) async {
+  Future<void> deleteGoogleDriveFile({required String gdID}) async {
     await _init();
     await _drive.files.delete(gdID);
     filesLoaded = _drive.files.list(spaces: 'appDataFolder');
@@ -126,15 +126,15 @@ class AuthProvider with ChangeNotifier {
   }
 
   void launchAutoBackup() async {
-    if (_authTimer != null) _authTimer.cancel();
+    if (_authTimer != null) _authTimer!.cancel();
     await _settingsProvider.settingsLoaded;
     if (auth.currentUser == null ||
         _settingsProvider.expireDate == null ||
         _settingsProvider.autoBackup == 0) return;
     final timeToExpire =
-        _settingsProvider.expireDate.difference(DateTime.now()).inSeconds;
+        _settingsProvider.expireDate!.difference(DateTime.now()).inSeconds;
     _authTimer = Timer.periodic(Duration(seconds: timeToExpire), (timer) async {
-      _authTimer.cancel();
+      _authTimer!.cancel();
       try {
         await uploadFileToGoogleDrive();
         await _settingsProvider.setAutoExpire(_settingsProvider.autoBackup);
@@ -144,7 +144,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   void setTimerAuto() {
-    if (_authTimer != null) _authTimer.cancel();
+    if (_authTimer != null) _authTimer!.cancel();
     if (_settingsProvider.autoBackup == 0 || auth.currentUser == null) return;
     _authTimer = Timer.periodic(
         _settingsProvider.autoExpireList[_settingsProvider.autoBackup],
@@ -164,6 +164,6 @@ class GoogleHttpClient extends IOClient {
   Future<IOStreamedResponse> send(http.BaseRequest request) =>
       super.send(request..headers.addAll(_headers));
   @override
-  Future<http.Response> head(Object url, {Map<String, String> headers}) =>
-      super.head(url, headers: headers..addAll(_headers));
+  Future<http.Response> head(Object url, {Map<String, String>? headers}) =>
+      super.head(url as Uri, headers: headers!..addAll(_headers));
 }

@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => SettingsProvider(),
+          create: (_) => SettingsProvider(context),
           lazy: false,
         ),
         ChangeNotifierProvider(
@@ -85,13 +85,12 @@ class MyApp extends StatelessWidget {
         selector: (_, set) =>
             Tuple2(set.darkTheme, set.language), //  set.darkTheme,
         builder: (context, data, child) {
-          context.setLocale(context.supportedLocales[data.item2 ?? 0]);
           return MaterialApp(
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
-            locale: context.supportedLocales[data.item2 ?? 0],
+            locale: context.supportedLocales[data.item2],
             title: 'Activity Tracker',
-            theme: data.item1 ?? false ? darkTheme : lightTheme,
+            theme: data.item1 ? darkTheme : lightTheme,
             home: child,
           );
         },
@@ -135,10 +134,10 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         iconTheme: IconThemeData(
-            color: Theme.of(context).appBarTheme.actionsIconTheme.color),
+            color: Theme.of(context).appBarTheme.actionsIconTheme!.color),
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text(
-          _tabs[_selectedIndex].title.tr(),
+          _tabs[_selectedIndex].title!.tr(),
           style: TextStyle(fontSize: 14),
         ),
         actions: <Widget>[
@@ -148,8 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: <Widget>[
         Consumer<DaysProvider>(builder: (_, daysProvider, __) {
           final loaded = context.read<ProjectsProvider>().isLoaded;
-          if (daysProvider.days == null ||
-              daysProvider.days.length == 0 && loaded) {
+          if (daysProvider.days.length == 0 && loaded) {
             return Center(
               child: SingleChildScrollView(
                 child: Column(
@@ -222,8 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     BorderRadius.vertical(top: Radius.circular(20.0))),
             context: context,
             isScrollControlled: true,
-            builder: (context) => AddProjectScreen(
-                project: null, title: LocaleKeys.BeginActivity.tr()));
+            builder: (context) => AddProjectScreen(project: null));
       } else {
         Navigator.push(
             context,
