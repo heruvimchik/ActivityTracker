@@ -13,8 +13,8 @@ import 'package:activityTracker/widgets/line.dart';
 
 class AddRecordScreen extends StatefulWidget {
   final String projectId;
-  final Record record;
-  const AddRecordScreen({this.record, this.projectId});
+  final Record? record;
+  const AddRecordScreen({this.record, required this.projectId});
 
   @override
   _AddRecordScreenState createState() => _AddRecordScreenState();
@@ -22,9 +22,9 @@ class AddRecordScreen extends StatefulWidget {
 
 class _AddRecordScreenState extends State<AddRecordScreen> {
   final dateFormat = DateFormat('EEE, MMM dd, yyyy', LocaleKeys.locale.tr());
-  DateTime dateNew;
-  DateTime startNew;
-  DateTime endNew;
+  DateTime? dateNew;
+  DateTime? startNew;
+  DateTime? endNew;
 
   bool get _isDateRight {
     final st = DateTime(
@@ -47,9 +47,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         endNew?.microsecond ?? 0);
     if (endNew == null) {
       final nowtime = DateTime(
-          dateNew.year,
-          dateNew.month,
-          dateNew.day,
+          dateNew!.year,
+          dateNew!.month,
+          dateNew!.day,
           startNew?.hour ?? 0,
           startNew?.minute ?? 0,
           startNew?.second ?? 0,
@@ -64,7 +64,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   }
 
   bool get _isRunning {
-    if (widget.record != null && widget.record.endTime == null) return true;
+    if (widget.record != null && widget.record!.endTime == null) return true;
     return false;
   }
 
@@ -76,9 +76,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
       startNew = now;
       endNew = now;
     } else {
-      dateNew = widget.record.startTime;
-      startNew = widget.record.startTime;
-      endNew = widget.record.endTime;
+      dateNew = widget.record!.startTime;
+      startNew = widget.record!.startTime;
+      endNew = widget.record!.endTime;
     }
     super.initState();
   }
@@ -90,7 +90,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-            color: Theme.of(context).appBarTheme.actionsIconTheme.color),
+            color: Theme.of(context).appBarTheme.actionsIconTheme!.color),
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text(
           LocaleKeys.Record.tr(),
@@ -102,9 +102,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               : IconButton(
                   icon: Icon(Icons.delete_forever),
                   onPressed: () {
-                    context
-                        .read<ProjectsProvider>()
-                        .deleteRecord(widget.projectId, widget.record.recordID);
+                    context.read<ProjectsProvider>().deleteRecord(
+                        widget.projectId, widget.record!.recordID);
                     Navigator.of(context).pop();
                   },
                 ),
@@ -131,7 +130,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       icon: Icon(Icons.keyboard_arrow_left),
                       onPressed: () => setState(() {
                         dateNew = DateTime(
-                            dateNew.year, dateNew.month, dateNew.day - 1);
+                            dateNew!.year, dateNew!.month, dateNew!.day - 1);
                       }),
                     ),
                   ),
@@ -150,7 +149,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         if (date != null && date != dateNew)
                           setState(() => dateNew = date);
                       },
-                      child: Text(dateFormat.format(dateNew),
+                      child: Text(dateFormat.format(dateNew!),
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 15)),
                     ),
@@ -160,12 +159,12 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     child: IconButton(
                       icon: Icon(Icons.keyboard_arrow_right),
                       onPressed: (endNew == null &&
-                              DateTime.now().isBefore(DateTime(dateNew.year,
-                                  dateNew.month, dateNew.day + 1)))
+                              DateTime.now().isBefore(DateTime(dateNew!.year,
+                                  dateNew!.month, dateNew!.day + 1)))
                           ? null
                           : () => setState(() {
-                                dateNew = DateTime(dateNew.year, dateNew.month,
-                                    dateNew.day + 1);
+                                dateNew = DateTime(dateNew!.year,
+                                    dateNew!.month, dateNew!.day + 1);
                               }),
                     ),
                   ),
@@ -191,14 +190,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       icon: Icon(Icons.keyboard_arrow_left),
                       onPressed: () => setState(() {
                         startNew = DateTime(
-                            dateNew.year,
-                            dateNew.month,
-                            dateNew.day,
-                            startNew.hour,
-                            startNew.minute - 5,
-                            startNew.second,
-                            startNew.millisecond,
-                            startNew.microsecond);
+                            dateNew!.year,
+                            dateNew!.month,
+                            dateNew!.day,
+                            startNew!.hour,
+                            startNew!.minute - 5,
+                            startNew!.second,
+                            startNew!.millisecond,
+                            startNew!.microsecond);
                       }),
                     ),
                   ),
@@ -221,7 +220,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                                 onConfirm: (date) =>
                                     setState(() => startNew = date),
                                 currentTime: startNew),
-                        child: Text(timeFormat.format(startNew).toLowerCase(),
+                        child: Text(timeFormat.format(startNew!).toLowerCase(),
                             textAlign: TextAlign.center,
                             style: _isDateRight
                                 ? TextStyle(fontSize: 15)
@@ -237,14 +236,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           ? null
                           : () => setState(() {
                                 startNew = DateTime(
-                                    dateNew.year,
-                                    dateNew.month,
-                                    dateNew.day,
-                                    startNew.hour,
-                                    startNew.minute + 5,
-                                    startNew.second,
-                                    startNew.millisecond,
-                                    startNew.microsecond);
+                                    dateNew!.year,
+                                    dateNew!.month,
+                                    dateNew!.day,
+                                    startNew!.hour,
+                                    startNew!.minute + 5,
+                                    startNew!.second,
+                                    startNew!.millisecond,
+                                    startNew!.microsecond);
                               }),
                     ),
                   ),
@@ -272,14 +271,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           ? null
                           : () => setState(() {
                                 endNew = DateTime(
-                                    dateNew.year,
-                                    dateNew.month,
-                                    dateNew.day,
-                                    endNew.hour,
-                                    endNew.minute - 5,
-                                    endNew.second,
-                                    endNew.millisecond,
-                                    endNew.microsecond);
+                                    dateNew!.year,
+                                    dateNew!.month,
+                                    dateNew!.day,
+                                    endNew!.hour,
+                                    endNew!.minute - 5,
+                                    endNew!.second,
+                                    endNew!.millisecond,
+                                    endNew!.microsecond);
                               }),
                     ),
                   ),
@@ -306,7 +305,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                                     currentTime: endNew),
                         child: Text(
                             !_isRunning
-                                ? timeFormat.format(endNew).toLowerCase()
+                                ? timeFormat.format(endNew!).toLowerCase()
                                 : LocaleKeys.Running.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 15)),
@@ -321,14 +320,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           ? null
                           : () => setState(() {
                                 endNew = DateTime(
-                                    dateNew.year,
-                                    dateNew.month,
-                                    dateNew.day,
-                                    endNew.hour,
-                                    endNew.minute + 5,
-                                    endNew.second,
-                                    endNew.millisecond,
-                                    endNew.microsecond);
+                                    dateNew!.year,
+                                    dateNew!.month,
+                                    dateNew!.day,
+                                    endNew!.hour,
+                                    endNew!.minute + 5,
+                                    endNew!.second,
+                                    endNew!.millisecond,
+                                    endNew!.microsecond);
                               }),
                     ),
                   ),
@@ -365,20 +364,20 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                                             0,
                                             0,
                                             0,
-                                            endNew.hour,
-                                            endNew.minute,
-                                            endNew.second,
-                                            endNew.millisecond,
-                                            endNew.microsecond)
+                                            endNew!.hour,
+                                            endNew!.minute,
+                                            endNew!.second,
+                                            endNew!.millisecond,
+                                            endNew!.microsecond)
                                         .difference(DateTime(
                                             0,
                                             0,
                                             0,
-                                            startNew.hour,
-                                            startNew.minute,
-                                            startNew.second,
-                                            startNew.millisecond,
-                                            startNew.microsecond))
+                                            startNew!.hour,
+                                            startNew!.minute,
+                                            startNew!.second,
+                                            startNew!.millisecond,
+                                            startNew!.microsecond))
                                         .inSeconds)
                                 .formatDuration(),
                             style: TextStyle(fontSize: 15),
@@ -406,18 +405,18 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     ? null
                     : () {
                         final startRec = DateTime(
-                            dateNew.year,
-                            dateNew.month,
-                            dateNew.day,
-                            startNew.hour,
-                            startNew.minute,
-                            startNew.second,
-                            startNew.millisecond,
-                            startNew.microsecond);
+                            dateNew!.year,
+                            dateNew!.month,
+                            dateNew!.day,
+                            startNew!.hour,
+                            startNew!.minute,
+                            startNew!.second,
+                            startNew!.millisecond,
+                            startNew!.microsecond);
                         final endRec = DateTime(
-                            dateNew.year,
-                            dateNew.month,
-                            dateNew.day,
+                            dateNew!.year,
+                            dateNew!.month,
+                            dateNew!.day,
                             endNew?.hour ?? 0,
                             endNew?.minute ?? 0,
                             endNew?.second ?? 0,

@@ -9,20 +9,20 @@ class LineChartScreen extends StatefulWidget {
   final List<MyRow> days;
   final Color color;
 
-  LineChartScreen({this.days, this.color});
+  LineChartScreen({required this.days, required this.color});
   @override
   _LineChartScreenState createState() => _LineChartScreenState();
 }
 
 class _LineChartScreenState extends State<LineChartScreen> {
-  DateTime _time;
-  Map<String, num> _measures;
+  DateTime? _time;
+  Map<String?, num?>? _measures;
   int changeIndex = 1;
 
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    DateTime filter;
+    DateTime? filter;
     switch (changeIndex) {
       case 0:
         filter = DateTime(now.year, now.month, now.day - 7);
@@ -40,11 +40,11 @@ class _LineChartScreenState extends State<LineChartScreen> {
         filter = DateTime(now.year - 1, now.month, now.day);
         break;
     }
-    List<MyRow> data = [];
+    List<MyRow>? data = [];
     if (filter != null) {
       data = widget.days
           .where((day) =>
-              day.timeStamp.isAfter(filter) && day.timeStamp.isBefore(now))
+              day.timeStamp.isAfter(filter!) && day.timeStamp.isBefore(now))
           .toList();
     } else {
       data = widget.days;
@@ -63,7 +63,7 @@ class _LineChartScreenState extends State<LineChartScreen> {
     final simpleCurrencyFormatter =
         charts.BasicNumericTickFormatterSpec.fromNumberFormat(
             NumberFormat.compact());
-    Color col = Theme.of(context).appBarTheme.textTheme.headline6.color;
+    Color col = Theme.of(context).appBarTheme.textTheme!.headline6!.color!;
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -72,9 +72,10 @@ class _LineChartScreenState extends State<LineChartScreen> {
           SizedBox(
             height: 5,
           ),
-          _time != null ? DateName(date: _time) : Text(''),
+          _time != null ? DateName(date: _time!) : Text(''),
           Text(_measures != null
-              ? Duration(seconds: ((_measures['Statistics'] * 60) * 60).toInt())
+              ? Duration(
+                      seconds: ((_measures!['Statistics']! * 60) * 60).toInt())
                   .formatDuration()
               : ''),
           Container(
@@ -147,8 +148,8 @@ class _LineChartScreenState extends State<LineChartScreen> {
 
   _onSelectionChanged(charts.SelectionModel model) {
     final selectedDatum = model.selectedDatum;
-    DateTime time;
-    final measures = <String, num>{};
+    DateTime? time;
+    final measures = <String?, num?>{};
 
     if (selectedDatum.isNotEmpty) {
       time = selectedDatum.first.datum.timeStamp;
@@ -167,9 +168,9 @@ class _LineChartScreenState extends State<LineChartScreen> {
 }
 
 class ChangeDate extends StatelessWidget {
-  final Color color;
-  final int tabIndex;
-  final Function(int tabIndex) onChangeIndex;
+  final Color? color;
+  final int? tabIndex;
+  final Function(int tabIndex)? onChangeIndex;
 
   ChangeDate({this.color, this.onChangeIndex, this.tabIndex});
 
@@ -185,12 +186,12 @@ class ChangeDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color textCol =
-        color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+        color!.computeLuminance() > 0.5 ? Colors.black : Colors.white;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.horizontal(
             right: Radius.circular(50.0), left: Radius.circular(50.0)),
-        color: color.withOpacity(0.9),
+        color: color!.withOpacity(0.9),
       ),
       height: 30,
       width: MediaQuery.of(context).size.width * 0.9,
@@ -200,7 +201,7 @@ class ChangeDate extends StatelessWidget {
           (index) {
             return Expanded(
                 child: InkWell(
-                    onTap: () => onChangeIndex(index),
+                    onTap: () => onChangeIndex!(index),
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(labels[index],

@@ -85,7 +85,7 @@ class _GoogleDriveScreenState extends State<GoogleDriveScreen> {
             LocaleKeys.Restore.tr(),
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
           ),
-          subtitle: Selector<AuthProvider, Future<ga.FileList>>(
+          subtitle: Selector<AuthProvider, Future<ga.FileList>?>(
             selector: (_, auth) => auth.filesLoaded,
             builder: (context, futureFileList, _) => FutureBuilder<ga.FileList>(
               future: futureFileList,
@@ -97,13 +97,13 @@ class _GoogleDriveScreenState extends State<GoogleDriveScreen> {
                         fontWeight: FontWeight.w200,
                       ));
 
-                if (snapshot.data == null || snapshot.data.files.length == 0)
+                if (snapshot.data == null || snapshot.data!.files!.length == 0)
                   return Text('');
                 return Text(
                   LocaleKeys.LastBackup.tr() +
                       ': ' +
                       hourFormat.format(DateTime.fromMillisecondsSinceEpoch(
-                          int.tryParse(snapshot.data.files.first.name ?? '') ??
+                          int.tryParse(snapshot.data!.files!.first.name ?? '') ??
                               0)),
                   style: TextStyle(
                       fontSize: 13,
@@ -137,7 +137,7 @@ class _GoogleDriveScreenState extends State<GoogleDriveScreen> {
               autoBackup == 0
                   ? settings.autoBackupList[autoBackup].tr()
                   : LocaleKeys.day.plural(
-                      int.tryParse(settings.autoBackupList[autoBackup])),
+                      int.tryParse(settings.autoBackupList[autoBackup])!),
               style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w300,
@@ -178,12 +178,12 @@ class _GoogleDriveScreenState extends State<GoogleDriveScreen> {
                               title: Text(index == 0
                                   ? settings.autoBackupList[index].tr()
                                   : LocaleKeys.day.plural(int.tryParse(
-                                      settings.autoBackupList[index]))),
+                                      settings.autoBackupList[index])!)),
                               value: index,
                               groupValue: autoBackup,
                               dense: true,
                               onChanged: (value) {
-                                settings.setAutoBackup(value);
+                                settings.setAutoBackup(value!);
                                 authGoogle.setTimerAuto();
                                 Navigator.pop(context);
                               },

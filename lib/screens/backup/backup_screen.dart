@@ -23,7 +23,7 @@ class _BackupScreenState extends State<BackupScreen> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-            color: Theme.of(context).appBarTheme.actionsIconTheme.color),
+            color: Theme.of(context).appBarTheme.actionsIconTheme!.color),
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text(LocaleKeys.Backup.tr(), style: TextStyle(fontSize: 18)),
       ),
@@ -39,7 +39,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 fit: BoxFit.fill,
               ),
             ),
-            StreamBuilder<User>(
+            StreamBuilder<User?>(
               stream: FirebaseAuth.instance.idTokenChanges(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {

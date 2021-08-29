@@ -39,7 +39,7 @@ class DayGrouping extends StatelessWidget {
           seconds: timersDays.fold(
               run.inSeconds,
               (int sum, Record t) =>
-                  sum + t.endTime.difference(t.startTime).inSeconds));
+                  sum + t.endTime!.difference(t.startTime!).inSeconds));
     });
     return ExpansionTile(
       initiallyExpanded: isNow(now, day.date) ||
@@ -97,10 +97,11 @@ class DayGrouping extends StatelessWidget {
 
 class DayGroupingRecords extends StatelessWidget {
   final DateTime date;
-  final projectID;
+  final String projectID;
   final List<Record> daysRecords;
 
-  const DayGroupingRecords({this.date, this.projectID, this.daysRecords});
+  const DayGroupingRecords(
+      {required this.date, required this.projectID, required this.daysRecords});
 
   bool get _isRunning {
     for (Record rec in daysRecords) {
@@ -119,7 +120,7 @@ class DayGroupingRecords extends StatelessWidget {
         seconds: timersRecords.fold(
             run.inSeconds,
             (int sum, Record t) =>
-                sum + t.endTime.difference(t.startTime).inSeconds));
+                sum + t.endTime!.difference(t.startTime!).inSeconds));
 
     final hour24 = context.select((SettingsProvider value) => value.hour24);
     final timeFormat = hour24 ? DateFormat('H:mm') : DateFormat('h:mm a');
@@ -171,7 +172,7 @@ class DayGroupingRecords extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       timeFormat
-                          .format(daysRecords[index].startTime)
+                          .format(daysRecords[index].startTime!)
                           .toLowerCase(),
                       style: TextStyle(fontSize: 14),
                     ),
@@ -180,7 +181,7 @@ class DayGroupingRecords extends StatelessWidget {
                         : Text(
                             ' - ' +
                                 timeFormat
-                                    .format(daysRecords[index].endTime)
+                                    .format(daysRecords[index].endTime!)
                                     .toLowerCase(),
                             style: TextStyle(fontSize: 14),
                           ),
@@ -190,8 +191,8 @@ class DayGroupingRecords extends StatelessWidget {
                     ? Text(LocaleKeys.Running.tr(),
                         style: TextStyle(color: Colors.red, fontSize: 14))
                     : Text(daysRecords[index]
-                        .endTime
-                        .difference(daysRecords[index].startTime)
+                        .endTime!
+                        .difference(daysRecords[index].startTime!)
                         .formatDuration()),
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => AddRecordScreen(
@@ -209,7 +210,7 @@ class DayGroupingRecords extends StatelessWidget {
 class DateName extends StatelessWidget {
   final DateTime date;
 
-  DateName({this.date});
+  DateName({required this.date});
 
   @override
   Widget build(BuildContext context) {

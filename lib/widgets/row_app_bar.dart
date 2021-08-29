@@ -11,7 +11,7 @@ class RowAppBar extends StatefulWidget {
 }
 
 class _RowAppBarState extends State<RowAppBar> {
-  DateTimeRange dateRange;
+  DateTimeRange? dateRange;
 
   void pickRangeDate(BuildContext ctx) async {
     final date = await showDateRangePicker(
@@ -39,11 +39,11 @@ class _RowAppBarState extends State<RowAppBar> {
             onTap: () => pickRangeDate(context),
             child: Text(
                 dateRange != null
-                    ? '${dateFormat.format(dateRange.start)} - ${dateFormat.format(dateRange.end)}'
+                    ? '${dateFormat.format(dateRange!.start)} - ${dateFormat.format(dateRange!.end)}'
                     : '',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Theme.of(context).appBarTheme.actionsIconTheme.color,
+                    color: Theme.of(context).appBarTheme.actionsIconTheme!.color,
                     fontSize: 13)),
           ),
         ),
@@ -54,7 +54,7 @@ class _RowAppBarState extends State<RowAppBar> {
                     child: Icon(Icons.filter_list,
                         color: Theme.of(context)
                             .appBarTheme
-                            .actionsIconTheme
+                            .actionsIconTheme!
                             .color),
                     onTap: () => pickRangeDate(context),
                   )

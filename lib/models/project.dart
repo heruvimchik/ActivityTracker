@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
+//import 'package:googleapis/calendar/v3.dart';
+import 'package:flutter/material.dart';
+
 class Record {
-  final String recordID;
-  DateTime endTime;
-  DateTime startTime;
+  final String? recordID;
+  DateTime? endTime;
+  DateTime? startTime;
   Record({this.recordID, this.startTime, this.endTime});
 
-  Record copyWith({DateTime startTime, DateTime endTime}) {
+  Record copyWith({DateTime? startTime, DateTime? endTime}) {
     return Record(
       recordID: this.recordID,
       endTime: endTime ?? this.endTime,
@@ -19,13 +23,17 @@ class Record {
 class Project {
   final String projectID;
   String description;
-  final List<Record> records;
+  List<Record> records = [];
   Color color;
 
-  Project({this.projectID, this.description, this.records, this.color});
+  Project(
+      {required this.projectID,
+      this.description = "",
+      this.records = const <Record>[],
+      this.color = Colors.amber});
 
   Project copyWith(
-      {String updDescription, Color updColor, List<Record> updRecords}) {
+      {String? updDescription, Color? updColor, List<Record>? updRecords}) {
     return Project(
         projectID: this.projectID,
         description: updDescription ?? this.description,

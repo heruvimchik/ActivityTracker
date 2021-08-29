@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,7 @@ enum Options { addRecord, editProject, deleteProject }
 
 class RecordsScreen extends StatefulWidget {
   final Project project;
-  RecordsScreen({this.project});
+  RecordsScreen({required this.project});
 
   @override
   _RecordsScreenState createState() => _RecordsScreenState();
@@ -46,9 +47,9 @@ class _RecordsScreenState extends State<RecordsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final prj = Provider.of<ProjectsProvider>(context).projects.firstWhere(
-        (proj) => proj.projectID == widget.project.projectID,
-        orElse: () => null);
+    final prj = Provider.of<ProjectsProvider>(context)
+        .projects
+        .firstWhereOrNull((proj) => proj.projectID == widget.project.projectID);
 
     if (prj == null) return Text('');
     return Scaffold(
@@ -56,7 +57,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         iconTheme: IconThemeData(
-            color: Theme.of(context).appBarTheme.actionsIconTheme.color),
+            color: Theme.of(context).appBarTheme.actionsIconTheme!.color),
         backgroundColor: Theme.of(context).backgroundColor,
         title: ListTile(
           leading: CircleAvatar(
@@ -116,8 +117,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
                             BorderRadius.vertical(top: Radius.circular(25.0))),
                     context: context,
                     isScrollControlled: true,
-                    builder: (context) => AddProjectScreen(
-                        project: prj, title: LocaleKeys.EditActivity.tr()));
+                    builder: (context) => AddProjectScreen(project: prj));
               }
             },
             itemBuilder: (_) => [
@@ -174,9 +174,8 @@ class _RecordsScreenState extends State<RecordsScreen> {
           builder: (context, daysProvider, _) {
             final List<MyRow> days = [];
             daysProvider.initialDays.forEach((day) {
-              final prj = day.entries.firstWhere(
-                  (p) => p.projectID == widget.project.projectID,
-                  orElse: () => null);
+              final prj = day.entries.firstWhereOrNull(
+                  (p) => p.projectID == widget.project.projectID);
               if (prj != null) {
                 List<Record> rec = prj.records
                     .where((element) => element.endTime != null)
@@ -187,8 +186,8 @@ class _RecordsScreenState extends State<RecordsScreen> {
                         0,
                         (double sum, Record rec) =>
                             sum +
-                            rec.endTime
-                                    .difference(rec.startTime)
+                            rec.endTime!
+                                    .difference(rec.startTime!)
                                     .inSeconds
                                     .toDouble() /
                                 3600)));
@@ -225,7 +224,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
 
 class ListRecords extends StatelessWidget {
   final String projectId;
-  const ListRecords({this.projectId});
+  const ListRecords({required this.projectId});
 
   @override
   Widget build(BuildContext context) {
@@ -233,8 +232,8 @@ class ListRecords extends StatelessWidget {
       builder: (context, daysProvider, _) {
         List<DayGroupingRecords> recordsByDays = [];
         daysProvider.initialDays.forEach((day) {
-          final prj = day.entries
-              .firstWhere((p) => p.projectID == projectId, orElse: () => null);
+          final prj =
+              day.entries.firstWhereOrNull((p) => p.projectID == projectId);
           if (prj != null) {
             recordsByDays.add(DayGroupingRecords(
               date: day.date,

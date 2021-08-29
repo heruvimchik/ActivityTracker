@@ -8,20 +8,19 @@ const String revenueKey = 'YVaAsDlsahIBDqnOGVYgMwCDZfAhRzJG';
 
 class PremiumProvider with ChangeNotifier {
   bool _isPro = false;
-  Offerings offerings;
-  PurchaserInfo _purchaserInfo;
+  Offerings? offerings;
+  PurchaserInfo? _purchaserInfo;
   final AuthProvider _authProvider;
 
-  PremiumProvider(this._authProvider) : assert(_authProvider != null) {
+  PremiumProvider(this._authProvider) {
     initPremium();
   }
   bool get isPro => _isPro;
 
   void _getPro() {
     if (_purchaserInfo != null) {
-      if (_purchaserInfo.entitlements.all.isNotEmpty &&
-          _purchaserInfo.entitlements.all['Pro'].isActive != null) {
-        _isPro = _purchaserInfo.entitlements.all['Pro'].isActive;
+      if (_purchaserInfo!.entitlements.all.isNotEmpty) {
+        _isPro = _purchaserInfo!.entitlements.all['Pro']!.isActive;
       } else {
         _isPro = false;
       }
@@ -30,13 +29,11 @@ class PremiumProvider with ChangeNotifier {
   }
 
   Future<void> initPremium() async {
-    //await Purchases.setDebugLogsEnabled(true);
     await Purchases.setup(revenueKey);
     try {
       _purchaserInfo = await Purchases.getPurchaserInfo();
       offerings = await Purchases.getOfferings();
     } catch (e) {}
-    //print(purchaserInfo.toString());
     _getPro();
     if (_isPro) {
       _authProvider.launchAutoBackup();
@@ -65,7 +62,7 @@ class PremiumProvider with ChangeNotifier {
     try {
       offerings = await Purchases.getOfferings();
       _purchaserInfo =
-          await Purchases.purchasePackage(offerings.current.lifetime);
+          await Purchases.purchasePackage(offerings!.current!.lifetime!);
     } on PlatformException catch (e) {
       if (int.parse(e.code) != PurchasesErrorCode.purchaseCancelledError.index)
         throw _getErrorMessage(e);

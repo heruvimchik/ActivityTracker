@@ -9,10 +9,8 @@ import 'package:activityTracker/models/project.dart';
 import 'package:activityTracker/providers/projects_provider.dart';
 
 class AddProjectScreen extends StatefulWidget {
-  final Project project;
-  final String title;
-
-  const AddProjectScreen({this.project, this.title});
+  final Project? project;
+  const AddProjectScreen({this.project});
 
   @override
   _AddProjectScreenState createState() => _AddProjectScreenState();
@@ -21,7 +19,7 @@ class AddProjectScreen extends StatefulWidget {
 class _AddProjectScreenState extends State<AddProjectScreen> {
   final _form = GlobalKey<FormState>();
   TextEditingController _textController = TextEditingController();
-  Color _colour;
+  Color? _colour;
   @override
   void initState() {
     _textController.text = widget.project?.description ?? '';
@@ -55,7 +53,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                   controller: _textController,
                   autovalidateMode: AutovalidateMode.always,
                   validator: (value) {
-                    if (value.trim().isEmpty) {
+                    if (value!.trim().isEmpty) {
                       return LocaleKeys.PleaseEnterName.tr();
                     }
                     return null;
@@ -86,14 +84,15 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                 onPressed: _textController.text.trim().isEmpty
                     ? null
                     : () {
-                        final isValid = _form.currentState.validate();
+                        final isValid = _form.currentState!.validate();
                         if (!isValid) return;
 
                         final provider = context.read<ProjectsProvider>();
                         widget.project == null
-                            ? provider.addProject(_textController.text, _colour)
+                            ? provider.addProject(
+                                _textController.text, _colour!)
                             : provider.updateProject(
-                                updProjectId: widget.project.projectID,
+                                updProjectId: widget.project!.projectID,
                                 description: _textController.text,
                                 color: _colour);
                         Navigator.of(context).pop();

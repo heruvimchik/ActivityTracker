@@ -23,7 +23,7 @@ class _ProScreenState extends State<ProScreen> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-            color: Theme.of(context).appBarTheme.actionsIconTheme.color),
+            color: Theme.of(context).appBarTheme.actionsIconTheme!.color),
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text(LocaleKeys.Premium.tr(), style: TextStyle(fontSize: 18)),
       ),
@@ -94,7 +94,7 @@ class _UpsellScreenState extends State<UpsellScreen> {
               primary: Colors.indigo,
             ),
             child: Text(
-              '${LocaleKeys.Upgrade.tr()} ${premium.offerings?.current?.lifetime?.product?.priceString ?? ''}',
+              '${LocaleKeys.Upgrade.tr()} ${premium.offerings?.current?.lifetime?.product.priceString ?? ''}',
               style: TextStyle(fontSize: 14, color: Colors.white),
             ),
             onPressed: () async {

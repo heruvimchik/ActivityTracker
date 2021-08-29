@@ -30,7 +30,7 @@ class BarChartScreen extends StatelessWidget {
     7,
   ];
 
-  const BarChartScreen({this.project});
+  const BarChartScreen({required this.project});
   @override
   Widget build(BuildContext context) {
     List<Record> timersStop =
@@ -40,25 +40,26 @@ class BarChartScreen extends StatelessWidget {
         totalHours,
         (double sum, Record rec) =>
             sum +
-            rec.endTime.difference(rec.startTime).inSeconds.toDouble() / 3600);
+            rec.endTime!.difference(rec.startTime!).inSeconds.toDouble() /
+                3600);
     double maxy = 0;
     if (MediaQuery.of(context).orientation == Orientation.portrait)
-      maxy = 100;
+      maxy = 110;
     else
       maxy = 130;
 
-    Color col = Theme.of(context).appBarTheme.textTheme.headline6.color;
+    Color? col = Theme.of(context).appBarTheme.textTheme!.headline6!.color;
     final firstDay = context.select((SettingsProvider value) => value.firstDay);
     List<double> weekdaysTotal = [];
     for (int day = 0; day <= 6; day++) {
       final d = daySort[day + 2 - firstDay];
       final weekday =
-          timersStop.where((element) => element.startTime.weekday == d);
+          timersStop.where((element) => element.startTime!.weekday == d);
       final value = weekday.fold(
           0.0,
           (double sum, Record rec) =>
               sum +
-              rec.endTime.difference(rec.startTime).inSeconds.toDouble() /
+              rec.endTime!.difference(rec.startTime!).inSeconds.toDouble() /
                   3600);
       weekdaysTotal.add(value);
     }

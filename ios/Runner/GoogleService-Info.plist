@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>160501439038-5lpb4ct3muotjhadmo3c3a6o53ijngsb.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.160501439038-5lpb4ct3muotjhadmo3c3a6o53ijngsb</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>160501439038-4mgce24sugu0ho2mf7tepjq700pgv182.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA_Q-X5y45_cEOM-aIID39weXZKspQLmF4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>160501439038</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.romquo.activityTracker</string>
+	<key>PROJECT_ID</key>
+	<string>activitytracker-d4667</string>
+	<key>STORAGE_BUCKET</key>
+	<string>activitytracker-d4667.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:160501439038:ios:65ce896dfab5fed7150f6f</string>
+	<key>DATABASE_URL</key>
+	<string>https://activitytracker-d4667.firebaseio.com</string>
+</dict>
+</plist>
